@@ -1,5 +1,7 @@
 WEEKLY UPDATE
 
+(Week 1 Oct 29 - Nov 5)
+
 Last week:
 - We thouroughly discussed how to implement this application and the various
 elements there is
@@ -12,3 +14,5 @@ This week:
 
 Challenges:
 - Our biggest challenge that we will face is the server side of our application 
+
+--------------------------------------------------------------------------------------
