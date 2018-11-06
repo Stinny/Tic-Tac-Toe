@@ -30,3 +30,9 @@ This week:
 
 Challenges:
 - Implementation of the server 
+
+
+Comments:
+1. Download the template ProgressUpdates.md, copy this content over and replace the txt file
+2. The progress does not seem to match the plan
+3. Need to decide what features to implement first rather than having a vague idea as of now.
