@@ -4,7 +4,7 @@ public class Board {
 	private Cell[][] board = new Cell[maxRows][maxCol];
 	
 	public Board() {
-		for (int row = 0; row < maxRows; row++){
+		for (int row = 0; row < maxRows; row++){      //Initialize a 3x3 array of CELLS with starting enum status of EMPTY 
 			for (int col = 0; col < maxCol; col++) {
 				board[row][col] = new Cell(row, col);
 			}
@@ -81,7 +81,26 @@ public class Board {
 		}
 		return victory;
 	}
+	public boolean checkDraw() {
+		for (int row = 0; row < maxRows; ++row) {
+	         for (int col = 0; col < maxCol; ++col) {
+	            if (board[row][col].content == Status.EMPTY) {
+	               return false; // if there is an empty cell, there can't be a draw
+	            }
+	         }
+	      }
+	      return true; // 
+	}
 	
+	public boolean checkWin() {
+		if (this.checkDiagonalCase() != 0 || this.checkVerticalCase() != 0 || this.checkHorizontalCase() != 0) {
+			return true;
+		} else
+			return false;
+	}
+	
+	//if checkWin() returns true the game should end and the current player's turn is the winner
+	//if false continue whatever loop keeping the game running
 	
 	
 	
