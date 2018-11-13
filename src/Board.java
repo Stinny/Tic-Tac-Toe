@@ -11,7 +11,24 @@ public class Board {
 		}
 	}
 	
+	private void setCircle(Cell[][] board) {
+		
+	}
 	
+	private int checkStatus() {
+		//check horizontal 
+		int row, col = 0;
+		
+		for(row = 0; row < maxRows; row++){
+			for (col = 0; col < maxCol; col++) {
+				if(board[row][col].content == Status.CIRCLE) {
+				
+				}
+			}
+			
+		}
+		return 0;
+	}
 	
 	//print board --- jframe/jpanels 
 	

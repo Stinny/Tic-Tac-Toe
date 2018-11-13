@@ -7,6 +7,7 @@ public class Cell {
 	public Cell(int row, int col) {
 		this.row = row;
 		this.col = col;
+		this.content = Status.EMPTY;
 	}
 	
 	public void setCircle() {
