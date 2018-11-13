@@ -33,4 +33,20 @@ This week:
 Challenges:
 - Implementation of the server 
 
+--------------------------------------------------------------------------------------
+
+(Week 3 Nov 12 - Nov 19)
+
+Last week:
+- Designed a playable Tic-Tac-Toe
+- Started on designing the interface
+
+
+This week:
+- Flesh out UI 
+- Implement server 
+
+Challenges:
+- Implementation of the server 
+
 
