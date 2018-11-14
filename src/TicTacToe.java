@@ -2,11 +2,12 @@ import javafx.application.Application;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
 public class TicTacToe extends Application{
 	
-	public Parent createPane() {
+	private Parent createPane() {
 		Pane pane = new Pane();
 		pane.setPrefSize(600, 600);
 		
@@ -19,7 +20,8 @@ public class TicTacToe extends Application{
 		
 		
 	}
-		
+	
+	
 	public static void main(String[] args) {
 		launch(args);
 	}
