@@ -81,6 +81,7 @@ public class Board {
 		}
 		return victory;
 	}
+	
 	public boolean checkDraw() {
 		for (int row = 0; row < maxRows; ++row) {
 	         for (int col = 0; col < maxCol; ++col) {
@@ -89,7 +90,7 @@ public class Board {
 	            }
 	         }
 	      }
-	      return true; // 
+	      return true; // if there is not a single empty cell, all spaces have been filled and no one has won yet
 	}
 	
 	public boolean checkWin() {
@@ -104,6 +105,6 @@ public class Board {
 	
 	
 	
-	//print board --- jframe/jpanels 
+	
 	
 }
