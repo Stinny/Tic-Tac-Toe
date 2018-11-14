@@ -29,28 +29,31 @@ public class Server {
 		Socket s;
 		while(!(playerMap.isEmpty())) {
 			if ((s = serverSocket.accept())!=null) {
-
-				receive = new BufferedReader(new InputStreamReader(s.getInputStream()));
-				String userName = receive.readLine();
-				try {
-
-					if(connected(userName,s)) {
-						sockets.add(s.toString());
-
-						playerMap userHandler = new playerMap(userName, s);
-
-						userMap.put(s.toString(), userHandler);
-
-						Thread send = new Thread(new ReceiveThread(s));
-						send.start();
-						threads.add(send);
-					}
-				} catch (Exception e) {
-					System.out.println(e);
-				}
-
+				createUser();
 			}
 		}
+	}
+
+	private static void createUser(){
+		receive = new BufferedReader(new InputStreamReader(s.getInputStream()));
+		String userName = receive.readLine();
+		try {
+
+			if(connected(userName,s)) {
+				sockets.add(s.toString());
+
+				playerMap userHandler = new playerMap(userName, s);
+
+				playerMap.put(s.toString(), userHandler);
+
+				Thread send = new Thread(new ReceiveThread(s));
+				send.start();
+				threads.add(send);
+			}
+		} catch (Exception e) {
+			System.out.println(e);
+		}
+
 	}
 
 	static class ReceiveThread implements Runnable {
@@ -80,6 +83,7 @@ public class Server {
 			}
 		}
 	}
+
 	private static void write(String message, Socket socket, String name) {
 		//Why upon closing the PrintWrite does the socket connection close
 		try {
