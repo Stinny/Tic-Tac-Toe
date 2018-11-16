@@ -11,6 +11,7 @@ public class PlayerHandler {
 
     public PlayerHandler(String userName, String userPassword, Socket userSocket)
     {
+        super();
         this.name = userName;
         this.socket = userSocket;
         this.password = userPassword;
@@ -21,7 +22,11 @@ public class PlayerHandler {
 
     public String getPassword(){ return password;}
 
-    public Socket getSocke(){
+    public Socket getSocket(){
         return socket;
+    }
+
+    public void changeUserName(String newUser) {
+        name = newUser;
     }
 }
