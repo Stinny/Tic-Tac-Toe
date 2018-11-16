@@ -1,7 +1,7 @@
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.*;
+import java.util.LinkedList;
 
 /**
  * Created by lucasraza on 3/8/17
@@ -10,10 +10,8 @@ import java.util.*;
  */
 public class Server {
 
-	private static HashMap<String, PlayerHandler> matching;
 
-	private static ArrayList<Socket> sockets;
-
+	public static LinkedList<PlayerHandler> matching;
 
 	public static void main(String[] args){
 
@@ -38,40 +36,23 @@ public class Server {
 				matching = connectPlayer(serverSocket);
 
 				//Match players
-				while(!(matching.isEmpty()){
 
-
-
-			}
-
-				//Create Game
-
-				//Store above process as a thread in a HashMap
-
-				//Tic Tac Toe Room Implementation
-
-
+                //Create Game
+                //Store above process as a thread in a HashMap
+                //Tic Tac Toe Room Implementation
 				// Create a server-game based version of TicTacToe.
-//				ServerGame game = new ServerGame(clientInput, serverOutput);
+				//ServerGame game = new ServerGame(clientInput, serverOutput);
 
-			}
-
-			// Catch any binding/IO errors that may occur.
-			catch(IOException e)
+			}catch(IOException e)
 			{
 				System.err.println(e);
 			}
 	}
-
-
-
-
-
 }
 
-	private static HashMap<String, PlayerHandler> connectPlayer(ServerSocket serverSocket){
+	public static LinkedList<PlayerHandler> connectPlayer(ServerSocket serverSocket){
 		PlayerHandler player;
-		HashMap<String, PlayerHandler> matching = new HashMap<>();
+		LinkedList<PlayerHandler> matching = new LinkedList<>();
 			try {
 				Socket s;
 				BufferedReader receive = new BufferedReader(new InputStreamReader(s.getInputStream()));
@@ -79,121 +60,153 @@ public class Server {
 				String password = receive.readLine();
 				if ((s = serverSocket.accept()) != null) {
 					player = createUser(userName, password,s);
+                    matching.add(player);
 				}
 			}catch(IOException e){
 				System.out.println(e);
 
 			}
-
-			matching.put(sockets.toString(), player);
-
-
 			return matching;
 	}
 
 
 
 	public static PlayerHandler createUser(String userName, String password, Socket s){
-
-
 			PlayerHandler player = new PlayerHandler(userName,password,s);
-
-			sockets = new ArrayList<>();
-			sockets.add(s);
-
 		    return player;
-
 	}
 
-	public boolean connected(String userName, Socket chatSocket) {
+	private boolean connected(String userName, Socket chatSocket) {
 		if (chatSocket.isConnected()) {
 			System.out.println(userName + " has connected to server on port: " + chatSocket.getLocalPort() + ". IP Address: " + chatSocket.getInetAddress());
-
 			return true;
 		} else {
 			return false;
 		}
 	}
 
-
-
-public class ServerGame{
+    public class ServerGame{
 
 	public boolean connected = false;
-
-	public ArrayList<String> sockets = new ArrayList<String>();
-
-	private boolean paired = false;
 
 	private BufferedReader input;
 
 	private DataOutputStream output;
 
-	private ArrayList<Thread> threads = new ArrayList<Thread>();
 
-	public ServerGame(BufferedReader clientInput, DataOutputStream serverOutput){
-		input = clientInput;
-		output = serverOutput;
+
+
+	public ServerGame(PlayerHandler p1, PlayerHandler p2){
+		p1.getSocket();
+		p2.getSocket();
 	}
 }
 
+    public class startGame extends Thread{
+
+	    Thread t;
+	    private PlayerHandler p1, p2;
+
+	    public startGame(PlayerHandler p1, PlayerHandler p2)
+        {
+            this.p1 = p1;
+            this.p2 = p2;
+            t.start();
+
+        }
+
+	    public void run(){
+            while(true){
+                if(matching.size()>=2)
+                {
+                    p1 = matching.remove();
+                    p2 = matching.remove();
+                    GameThread()
+                }
+
+            }
+
+        }
+    }
+    public class GameThread implements Runnable{
+	    String name;
+	    Thread t;
+        private Board myBoard;
+        private gameStateTest gameState;
+        private Status currPlayer;
+
+	    public GameThread(String thread, PlayerHandler p1, PlayerHandler p2){
+	        name = thread;
+            t = new Thread(this,name);
+
+            t.start();
+        }
+        public void run() {
+
+            Board myBoard = new Board();
+
+            startGame();
+
+            do {
+                playerMove(currPlayer);
+                checkGameState(currPlayer);
+                if (gameState == gameStateTest.CROSSWIN) {
+                    System.out.println("Cross won");
+                } else if (gameState == gameStateTest.CIRCLEWIN){
+                    System.out.println("Circle won");
+                } else if (gameState == gameStateTest.DRAW) {
+                    System.out.println("It's a draw");
+                }
+
+                currPlayer = (currPlayer == Status.CROSS) ? Status.CIRCLE : Status.CROSS; // if currplayer is cross, it is circle's turn, otherwise, cross' turn
+            } while (gameState == gameStateTest.PLAYING);
+
+
+
+        }
+        public void startGame() {
+            myBoard.startNew();
+            currPlayer = Status.CROSS;
+            gameState = gameStateTest.PLAYING;
+        }
+        public void playerMove (Status currStatus) { //A player moves based on their assigned Piece (status)
+            boolean turnEnd = false;
+            do {
+                if (currStatus == Status.CROSS) {
+                    //Player 1 move
+                    System.out.println("Player 'X', enter your coordinates (row[0 - 2], col[0 - 2]): ");
+                } else {
+                    //Player 2 move
+                    System.out.println("Player 'O', enter your coordinates (row[0 - 2], col[0 - 2]): ");
+                }
+                int row = input.nextInt();
+                int col = input.nextInt();
+                if (row >= 0  && row < Board.maxRows && col >= 0 && col < Board.maxCol && myBoard.board[row][col].content == Status.EMPTY) {
+                    myBoard.board[row][col].content = currStatus;
+                    myBoard.currRow = row;
+                    myBoard.currCol = col;
+                    turnEnd = true;
+                } else{
+                    System.out.println("Invalid move");
+                }
+            } while (!turnEnd);
+        }
+
+        public void checkGameState(Status currStatus) {
+            if (myBoard.checkWin(currStatus)) { //if there's a win on the board do this
+                gameState = (currStatus == Status.CROSS) ? gameState.CROSSWIN : gameState.CIRCLEWIN; //if currState/turn is CROSS, CROSS WINS; else, CIRCLE WINS
+            } else if (myBoard.checkDraw()) {
+                gameState = gameStateTest.DRAW;
+            }
+        }
 
 
 
 
 
-	static class ReceiveThread implements Runnable {
-		Socket socket = null;
-		BufferedReader receive;
-
-		public ReceiveThread(Socket chatSocket) {
-			socket = chatSocket;
-
-		}
-
-		public void run() {
-			String message;
-
-			try (BufferedReader r = new BufferedReader(new InputStreamReader(socket.getInputStream()))){
-				while ((message = r.readLine()) != null) {
-					if (message.equals(Protocol.MAKE_MOVE)) {
-						String move = in.readLine();
-						String[] l = move.split(" ");
-
-						board.makeMove(Integer.parseInt(l[0]), Integer.parseInt(l[1]), "X");
-						out2.println(Protocol.MOVE_MADE);
-						out2.println(move);
-						switch(board.getStatus()) {
-							case "X":
-								out2.println(Protocol.GAME_LOST);
-								out.println(Protocol.GAME_WON);
-								break;
-							case "O":
-								out2.println(Protocol.GAME_WON);
-								out.println(Protocol.GAME_LOST);
-								break;
-							case "tie":
-								out2.println(Protocol.GAME_TIED);
-								out.println(Protocol.GAME_TIED);
-								break;
-						}
-
-					}
-				}
-				while (true) {
-					message = r.readLine();
-					for (String object : sockets) {
-						if (!(object.equals(socket.toString()))) {
-							write(message, userMap.get(object).getSocket(), userMap.get(socket.toString()).getUserName());
-						}
-					}
-				}
+    }
 
 
-			} catch (IOException e) {System.out.println(e);
-			}
-		}
-	}
 
 	private void write(String message, Socket socket, String name) {
 		//Why upon closing the PrintWrite does the socket connection close
