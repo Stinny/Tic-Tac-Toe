@@ -49,4 +49,15 @@ This week:
 Challenges:
 - Implementation of the server 
 
+--------------------------------------------------------------------------------------
+
+(Week 4 Nov 19 - Nov 26)
+
+Last week:
+- Implemented GUI
+- Finishing up server
+
+This week:
+- Finish up server
+
 
