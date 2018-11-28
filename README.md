@@ -26,6 +26,15 @@ Members:
 - Marcus Wong
 - Lucus Raza
 
+Getting Started
+Install
+- 
+
+Run
+
+Features
+Demo video (1-2 mins)
+
 # Comments
 1. Follow the template for README.md. You can download the template from Blackboard and modify the content accordingly. For example, the title should be Tic Tac Toe rather than term project
 2. Write more details on the deliverables. What features will be delivered for your application? Think about what you are going to demo in the final presentation and compile a list.
