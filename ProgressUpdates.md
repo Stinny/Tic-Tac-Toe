@@ -5,11 +5,11 @@ WEEKLY UPDATE
 Last week:
 - We thouroughly discussed how to implement this application and the various
 elements there is
-- Also discussed possible options for how the client side will look
+- Also discussed possible options for how the Client side will look
 - No physical work has been done yet, just discussions
 
 This week:
-- Start working on the client side of things
+- Start working on the Client side of things
 - Meet as team to figure out how to officially start our application
 
 Challenges:

@@ -55,29 +55,23 @@ public class Server {
                 PlayerHandler p2 = matching.removeLast();
                 StartGame game = new StartGame(p1,p2);
 
-
                 //Create Game
                 Thread newGame = new Thread(game);
                 newGame.start();
 
-
                 //Store above process as a thread in a HashMap
                 games.put(newGame.getName(), newGame);
-
                 //Tic Tac Toe Room Implementation
                 //games.
-
 			}catch(IOException e)
 			{
 				System.err.println(e);
 			}
 	}
 }
-
     public static void listenForClient(){
 
     }
-
     public void checkGameState(Status currStatus) {
         if (myBoard.checkWin(currStatus)) { //if there's a win on the board do this
             gameState = (currStatus == Status.CROSS) ? gameState.CROSSWIN : gameState.CIRCLEWIN; //if currState/turn is CROSS, CROSS WINS; else, CIRCLE WINS
@@ -85,9 +79,7 @@ public class Server {
             gameState = gameStateTest.DRAW;
         }
     }
-
-	public static LinkedList<PlayerHandler> connectPlayer(ServerSocket serverSocket){
-		PlayerHandler player;
+	public LinkedList<PlayerHandler> connectPlayer(ServerSocket serverSocket){
 		LinkedList<PlayerHandler> matching = new LinkedList<>();
 			try {
 				Socket s = serverSocket.accept();
@@ -102,12 +94,10 @@ public class Server {
 			}
 			return matching;
 	}
-
 	public static PlayerHandler createUser(String userName, Socket s, Status status){
             player = new PlayerHandler(s,status);
 		    return player;
 	}
-
 	private boolean connected(String userName, Socket chatSocket) {
 		if (chatSocket.isConnected()) {
 			System.out.println(userName + " has connected to server on port: " + chatSocket.getLocalPort() + ". IP Address: " + chatSocket.getInetAddress());
@@ -116,8 +106,6 @@ public class Server {
 			return false;
 		}
 	}
-
-
     public class StartGame implements Runnable{
 
 	    private PlayerHandler p1, p2;
@@ -126,14 +114,12 @@ public class Server {
         {
             this.p1 = p1;
             this.p2 = p2;
-
         }
 
 	    public void run(){
 	        int i = 0;
 
             while(true){
-
                 if(matching.size()>=2)
                 {
                     p1 = matching.remove();
@@ -142,9 +128,7 @@ public class Server {
                     Game game = new Game(Integer.toString(i),p1,p2);
                     game.startGame();
                 }
-
             }
-
         }
         public void start(){
 	        System.out.print("New Game Started with " + p1.getUserName() + " and " + p2.getUserName());
@@ -154,22 +138,22 @@ public class Server {
         private String name;
         private Socket socket;
         private Status content;
+        private int coordX;
+        private int coordY;
 
         public PlayerHandler(Socket userSocket, Status content)
         {
             this.socket = userSocket;
             this.content = content;
         }
+
         public void run(){
-
             String clientResponse;
-
             try {
                 // initialize input and output streams
                 BufferedReader in = new BufferedReader(
                         new InputStreamReader(socket.getInputStream()));
                 PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-
 
                 while (true) {
                     // read and parse Client response
@@ -201,10 +185,7 @@ public class Server {
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
-
-
                 case (1):
-
                     try {
                         int cordX = Integer.parseInt(params[1]);
                         int cordY = Integer.parseInt(params[2]);
@@ -224,42 +205,34 @@ public class Server {
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
-
-
             }
-        }
-        public String[] playerMove(int cordX, int cordY, int code){
-            String args[] = new String[3];
-
-            String x = Integer.toString(cordX);
-            String y = Integer.toString(cordX);
-            String code = Integer.toString(cordX);
-
-            args[0] = x;
-            args[1] = y;
-            args[2] = code;
-
-            return args;
-
         }
         public void setUserName(String username){
             this.name = username;
-
         }
         public String getUserName(){
             return name;
         }
-
-
         public Socket getSocket(){
             return socket;
         }
-
         public void changeUserName(String newUser) {
             name = newUser;
         }
         public Status getStatus(){
             return content;
+        }
+        public int getCoordX(){
+            return this.coordX;
+        }
+        public int getCoordY(){
+            return this.coordY;
+        }
+        public void setCoordX(int coordX){
+            this.coordX = coordX;
+        }
+        public void setCoordY(int coordY){
+            this.coordY = coordY;
         }
     }
     public class Game extends Thread{
@@ -267,15 +240,25 @@ public class Server {
 	    Thread t;
         private gameStateTest gameState;
         private Status currPlayer;
+        PlayerHandler p1, p2;
 
 	    public Game(String thread, PlayerHandler p1, PlayerHandler p2){
 	        name = thread;
             t = new Thread(this,name);
+            this.p1 = p1;
+            this.p2 = p2;
         }
         public void run(){
             startGame();
+            boolean turn = true;
             do {
-                move(currPlayer);
+                if(turn) {
+                    move(p1);
+                    turn = false;
+                }else {
+                    move(p2);
+                    turn = true;
+                }
                 checkGameState(currPlayer);
                 if (gameState == gameStateTest.CROSSWIN) {
                     System.out.println("Cross won");
@@ -284,23 +267,21 @@ public class Server {
                 } else if (gameState == gameStateTest.DRAW) {
                     System.out.println("It's a draw");
                 }
-
                 currPlayer = (currPlayer == Status.CROSS) ? Status.CIRCLE : Status.CROSS; // if currplayer is cross, it is circle's turn, otherwise, cross' turn
             } while (gameState == gameStateTest.PLAYING);
-
-
-
         }
-        public void move (Status currStatus) { //A player moves based on their assigned Piece (status)
+        public void move (PlayerHandler player) { //A player moves based on their assigned Piece (status)
+            boolean turnX = true;
             boolean turnEnd = false;
             do {
-                if (currStatus == Status.CROSS) {
+                if (turnX==true && player.content == Status.CROSS) {
                     System.out.println("Player 'X', enter your coordinates (row[0 - 2], col[0 - 2]): ");
                 } else {
                     System.out.println("Player 'O', enter your coordinates (row[0 - 2], col[0 - 2]): ");
                 }
-                int row =
-                int col =
+
+                int row = player.getCoordX()
+                int col = player.getCoordY()
                 if (row >= 0  && row < Board.maxRows && col >= 0 && col < Board.maxCol && myBoard.board[row][col].content == Status.EMPTY) {
                     board.board[row][col].content = currStatus;
                     board.currRow = row;
@@ -316,8 +297,6 @@ public class Server {
             currPlayer = Status.CROSS;
             gameState = gameStateTest.PLAYING;
         }
-
-
         public void checkGameState(Status currStatus) {
             if (board.checkWin(currStatus)) { //if there's a win on the board do this
                 gameState = (currStatus == Status.CROSS) ? gameState.CROSSWIN : gameState.CIRCLEWIN; //if currState/turn is CROSS, CROSS WINS; else, CIRCLE WINS
