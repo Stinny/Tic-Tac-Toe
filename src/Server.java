@@ -11,9 +11,12 @@ import java.util.LinkedList;
  *
  */
 public class Server {
-    private ServerSocket serverSocket;
-    Board myBoard;
-    private gameStateTest gameState;
+    private static ServerSocket serverSocket;
+    private static Board myBoard;
+    private static gameStateTest gameState;
+    private static Board board = new Board();
+
+    public static PlayerHandler player;
 
 	public static LinkedList<PlayerHandler> matching;
 
@@ -31,15 +34,9 @@ public class Server {
 			// Monitor connections to PORT (if it is available).
 			try
 			{
-			    int port = Integer.parseInt(args[0]);
-			    try{
-                    ServerSocket serverSocket = new ServerSocket(PORT);
-			        new server(port).acceptClients();
-                } catch(IOException e){
-			        e.printStackTrace();
-                }
+                Server server = new Server(PORT);
 
-
+                serverSocket.accept();
 				//System.out.println("The server is now running on port " + PORT + "...");
 
 				Socket connectionSocket = serverSocket.accept();
@@ -53,19 +50,22 @@ public class Server {
 				matching = connectPlayer(serverSocket);
 
 				//Store matched players in a HashMap
-                startGame game = new startGame(matching.remove(),matching.remove());
+
+                PlayerHandler p1 = matching.removeLast();
+                PlayerHandler p2 = matching.removeLast();
+                StartGame game = new StartGame(p1,p2);
 
 
                 //Create Game
-                Thread game = new Thread(game);
-                game.start();
+                Thread newGame = new Thread(game);
+                newGame.start();
 
 
                 //Store above process as a thread in a HashMap
-                games.put(game.getName(), game);
+                games.put(newGame.getName(), newGame);
 
                 //Tic Tac Toe Room Implementation
-                games.
+                //games.
 
 			}catch(IOException e)
 			{
@@ -73,6 +73,10 @@ public class Server {
 			}
 	}
 }
+
+    public static void listenForClient(){
+
+    }
 
     public void checkGameState(Status currStatus) {
         if (myBoard.checkWin(currStatus)) { //if there's a win on the board do this
@@ -86,12 +90,10 @@ public class Server {
 		PlayerHandler player;
 		LinkedList<PlayerHandler> matching = new LinkedList<>();
 			try {
-				Socket s;
+				Socket s = serverSocket.accept();
 				BufferedReader receive = new BufferedReader(new InputStreamReader(s.getInputStream()));
-				String userName = receive.readLine();
-				String password = receive.readLine();
 				if ((s = serverSocket.accept()) != null) {
-					player = createUser(userName, s, status);
+					player = createUser(player.getUserName(), s, Status.EMPTY );
                     matching.add(player);
 				}
 			}catch(IOException e){
@@ -102,7 +104,7 @@ public class Server {
 	}
 
 	public static PlayerHandler createUser(String userName, Socket s, Status status){
-			PlayerHandler player = new PlayerHandler(userName,s,status);
+            player = new PlayerHandler(s,status);
 		    return player;
 	}
 
@@ -116,11 +118,11 @@ public class Server {
 	}
 
 
-    public static class startGame implements Runnable{
+    public class StartGame implements Runnable{
 
 	    private PlayerHandler p1, p2;
 
-	    public startGame(PlayerHandler p1, PlayerHandler p2)
+	    public StartGame(PlayerHandler p1, PlayerHandler p2)
         {
             this.p1 = p1;
             this.p2 = p2;
@@ -148,25 +150,132 @@ public class Server {
 	        System.out.print("New Game Started with " + p1.getUserName() + " and " + p2.getUserName());
         }
     }
+    public class PlayerHandler implements Runnable {
+        private String name;
+        private Socket socket;
+        private Status content;
+
+        public PlayerHandler(Socket userSocket, Status content)
+        {
+            this.socket = userSocket;
+            this.content = content;
+        }
+        public void run(){
+
+            String clientResponse;
+
+            try {
+                // initialize input and output streams
+                BufferedReader in = new BufferedReader(
+                        new InputStreamReader(socket.getInputStream()));
+                PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+
+
+                while (true) {
+                    // read and parse Client response
+                    clientResponse = in.readLine();
+                    parseCode(clientResponse, out);
+                }
+            } catch (IOException e) {
+                log(e);
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    socket.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        public void parseCode(String clientResponse, PrintWriter out) throws Exception{
+            String[] params = clientResponse.split(",");
+            int code = Integer.parseInt((params[0]));
+
+            switch(code) {
+                case (0):
+                    try {
+                        String username = params[1];
+                        setUserName(username);
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+
+                case (1):
+
+                    try {
+                        int cordX = Integer.parseInt(params[1]);
+                        int cordY = Integer.parseInt(params[2]);
+
+                        int cCode = 0;
+
+                        String x = Integer.toString(cordX);
+                        String y = Integer.toString(cordY);
+                        String code = Integer.toString(cCode);
+
+                        out.println(x);
+                        out.flush();
+                        out.println(y);
+                        out.flush();
+                        out.println(code);
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+
+            }
+        }
+        public String[] playerMove(int cordX, int cordY, int code){
+            String args[] = new String[3];
+
+            String x = Integer.toString(cordX);
+            String y = Integer.toString(cordX);
+            String code = Integer.toString(cordX);
+
+            args[0] = x;
+            args[1] = y;
+            args[2] = code;
+
+            return args;
+
+        }
+        public void setUserName(String username){
+            this.name = username;
+
+        }
+        public String getUserName(){
+            return name;
+        }
+
+
+        public Socket getSocket(){
+            return socket;
+        }
+
+        public void changeUserName(String newUser) {
+            name = newUser;
+        }
+        public Status getStatus(){
+            return content;
+        }
+    }
     public class Game extends Thread{
 	    String name;
 	    Thread t;
-        private Board myBoard;
         private gameStateTest gameState;
         private Status currPlayer;
 
-	    public GameThread(String thread, PlayerHandler p1, PlayerHandler p2){
+	    public Game(String thread, PlayerHandler p1, PlayerHandler p2){
 	        name = thread;
             t = new Thread(this,name);
         }
         public void run(){
-
-            Board myBoard = new Board();
-
             startGame();
-
             do {
-                playerMove(currPlayer);
+                move(currPlayer);
                 checkGameState(currPlayer);
                 if (gameState == gameStateTest.CROSSWIN) {
                     System.out.println("Cross won");
@@ -182,37 +291,39 @@ public class Server {
 
 
         }
+        public void move (Status currStatus) { //A player moves based on their assigned Piece (status)
+            boolean turnEnd = false;
+            do {
+                if (currStatus == Status.CROSS) {
+                    System.out.println("Player 'X', enter your coordinates (row[0 - 2], col[0 - 2]): ");
+                } else {
+                    System.out.println("Player 'O', enter your coordinates (row[0 - 2], col[0 - 2]): ");
+                }
+                int row =
+                int col =
+                if (row >= 0  && row < Board.maxRows && col >= 0 && col < Board.maxCol && myBoard.board[row][col].content == Status.EMPTY) {
+                    board.board[row][col].content = currStatus;
+                    board.currRow = row;
+                    board.currCol = col;
+                    turnEnd = true;
+                } else{
+                    System.out.println("Invalid move");
+                }
+            } while (!turnEnd); //
+        }
         public void startGame() {
-            myBoard.startNew();
+            board.startNew();
             currPlayer = Status.CROSS;
             gameState = gameStateTest.PLAYING;
         }
 
 
         public void checkGameState(Status currStatus) {
-            if (myBoard.checkWin(currStatus)) { //if there's a win on the board do this
+            if (board.checkWin(currStatus)) { //if there's a win on the board do this
                 gameState = (currStatus == Status.CROSS) ? gameState.CROSSWIN : gameState.CIRCLEWIN; //if currState/turn is CROSS, CROSS WINS; else, CIRCLE WINS
             } else if (myBoard.checkDraw()) {
                 gameState = gameStateTest.DRAW;
             }
         }
     }
-
-
-
-	private void write(String message, Socket socket, String name) {
-		//Why upon closing the PrintWrite does the socket connection close
-		try {
-			PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-			if (message != null) {
-				System.out.println(name + ": " + message);
-				out.println(name + ": " + message);
-				out.flush();
-			}
-		} catch (IOException e) {
-			System.out.println(e);
-		}
-	}//closes write method
-
-
 }

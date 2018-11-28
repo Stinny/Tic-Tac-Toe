@@ -1,12 +1,12 @@
 import javafx.application.Application;
 
+import javafx.geometry.Insets;
+import javafx.scene.Group;
 import javafx.scene.Parent;
 
 import javafx.scene.Scene;
 
-import javafx.scene.layout.GridPane;
-
-import javafx.scene.layout.Pane;
+import javafx.scene.layout.*;
 
 import javafx.stage.Stage;
 
@@ -17,33 +17,24 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
 import java.io.FileInputStream;
-
-import javafx.scene.layout.HBox;
+import java.io.IOException;
 
 import javafx.scene.control.TextField;
 
 import javafx.scene.text.*;
 
-import javafx.scene.layout.VBox;
-
 import javafx.geometry.Pos;
 
-import javafx.scene.layout.Priority;
 
+public class TicTacToe extends Application {
 
-
-public class TicTacToe extends Application{
-
-
-
-	private Button start = new Button("Start");
-
+	Client client = new Client("127.0.0.1", 80);
+	private Button play = new Button("PLAY");
 	private Button exit = new Button("Exit");
 
 	private TextField playerName = new TextField();
 
 	private Text titleArt = new Text();
-
 
 
 	public void startButton(String playerName)
@@ -53,7 +44,6 @@ public class TicTacToe extends Application{
 		Stage stage = new Stage();
 
 
-
 		GridPane gridPane = new GridPane();
 
 		gridPane.setAlignment(Pos.CENTER);
@@ -61,7 +51,6 @@ public class TicTacToe extends Application{
 		gridPane.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
 
 		//gridPane.setPadding(new Insets(15));
-
 
 
 		for (int i = 0; i < 3; i++) {
@@ -85,7 +74,6 @@ public class TicTacToe extends Application{
 		}
 
 
-
 		Scene scene2 = new Scene(gridPane, 600, 400);
 
 		stage.setTitle(playerName);
@@ -105,81 +93,82 @@ public class TicTacToe extends Application{
 	}
 
 
-
-
-
 	@Override
 
 	public void start(Stage primaryStage) throws Exception {
 
-		GridPane g = new GridPane();
+		BorderPane root = new BorderPane();
 
-		g.setHgap(1);
+		root.setCenter(addHBox());
 
-		g.setVgap(1);
-
-
-
-		//ImageView imv = new ImageView();
-
-		//Image image = new Image(TicTacToe.class.getResourceAsStream("tictactoe.png"));
-
-		//imv.setImage(image);
+		Group g1 = new Group();
+		Group g2 = new Group();
+		g1.getChildren().add(root);
 
 
+		Scene sc1 = new Scene(g1, 600, 400);
+		Scene sc2 = new Scene(g2, 600, 600);
 
-		//HBox picarea = new HBox();
+		play.setOnMouseClicked(e -> {
+			primaryStage.setScene(sc2);
+			try {
+				client.sendMove(0);
+			}catch(IOException i){
+				i.printStackTrace();;
+			}
+		});
 
-		//picarea.getChildren().add(imv);
+		//g.setHgap(1);
 
-
-
-		//g.add(picarea, 5, 4);
-
-		g.add(start, 200, 200);
-
-		g.add(playerName, 199, 200);
-
-		playerName.setPromptText("Enter player name"); //sets the prompt text for player name text field
-
-
-
-		//g.add(titleArt, 100, 12);
-
-		titleArt.setText("Tic Tac Toe");
-
-		titleArt.setId("fancytext");
-
-		//titleArt.setTextAlignment(TextAlignment.CENTER);
+		//g.setVgap(1);
 
 
+		//g.add(start, 200, 200);
 
-		start.setPrefWidth(75);
+		//g.add(playerName, 199, 200);
 
-		//exit.setPrefWidth(50);
+		//titleArt.setText("Tic Tac Toe");
+
+		//titleArt.setId("fancytext");
 
 
+		//start.setPrefWidth(75);
 
-		Scene s = new Scene(g, 600, 400);
 
-		s.getStylesheets().add("styles.css");
+		//Scene s = new Scene(g, 600, 400);
+
+		sc1.getStylesheets().add("styles.css");
 
 		primaryStage.setTitle("Tic Tac Toe");
 
-		primaryStage.setScene(s);
+		primaryStage.setScene(sc1);
 
 		primaryStage.show();
 
 
+		//start.setOnMouseClicked(e -> {root.setCenter(g2)
+		//}
+		//);
 
-		start.setOnAction(e -> startButton(playerName.getText()));
-
-		exit.setOnAction(e -> exitButton());
+		//exit.setOnAction(e -> exitButton());
 
 	}
+	public HBox addHBox(){
+		HBox hbox = new HBox();
 
+		Button play = new Button("PLAY");
+
+		playerName.setPromptText("Enter player name"); //sets the prompt text for player name text field
+
+		hbox.getChildren().addAll(play,playerName);
+
+	}
 
 
 	public static void main(String[] args) {
 
 		launch(args);
+
+	}
+
+}
