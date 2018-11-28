@@ -7,9 +7,8 @@ import java.net.Socket;
 public class PlayerHandler {
     private String name;
     private Socket socket;
-    private String password;
 
-    public PlayerHandler(String userName, String userPassword, Socket userSocket)
+    public PlayerHandler(String userName, Socket userSocket)
     {
         super();
         this.name = userName;
@@ -20,7 +19,6 @@ public class PlayerHandler {
         return name;
     }
 
-    public String getPassword(){ return password;}
 
     public Socket getSocket(){
         return socket;

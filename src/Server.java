@@ -1,6 +1,8 @@
+
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.HashMap;
 import java.util.LinkedList;
 
 /**
@@ -9,10 +11,17 @@ import java.util.LinkedList;
  *
  */
 public class Server {
-
+    private ServerSocket serverSocket;
+    Board myBoard;
+    private gameStateTest gameState;
 
 	public static LinkedList<PlayerHandler> matching;
 
+	public static HashMap<String, Thread> games;
+
+	public Server(int port) throws IOException{
+	    serverSocket = new ServerSocket(port);
+    }
 	public static void main(String[] args){
 
 		int PORT = 2000;
@@ -22,11 +31,19 @@ public class Server {
 			// Monitor connections to PORT (if it is available).
 			try
 			{
-				ServerSocket serverSocket = new ServerSocket(PORT);
-				System.out.println("The server is now running on port " + PORT + "...");
+			    int port = Integer.parseInt(args[0]);
+			    try{
+                    ServerSocket serverSocket = new ServerSocket(PORT);
+			        new server(port).acceptClients();
+                } catch(IOException e){
+			        e.printStackTrace();
+                }
+
+
+				//System.out.println("The server is now running on port " + PORT + "...");
 
 				Socket connectionSocket = serverSocket.accept();
-				System.out.println("A user has connected from " + connectionSocket.getInetAddress());
+				//System.out.println("A user has connected from " + connectionSocket.getInetAddress());
 
 				BufferedReader clientInput = new BufferedReader(new InputStreamReader(connectionSocket.getInputStream()));
 
@@ -35,13 +52,20 @@ public class Server {
 				//Gets user's info and connects player
 				matching = connectPlayer(serverSocket);
 
-				//Match players
+				//Store matched players in a HashMap
+                startGame game = new startGame(matching.remove(),matching.remove());
+
 
                 //Create Game
+                Thread game = new Thread(game);
+                game.start();
+
+
                 //Store above process as a thread in a HashMap
+                games.put(game.getName(), game);
+
                 //Tic Tac Toe Room Implementation
-				// Create a server-game based version of TicTacToe.
-				//ServerGame game = new ServerGame(clientInput, serverOutput);
+                games.
 
 			}catch(IOException e)
 			{
@@ -49,6 +73,14 @@ public class Server {
 			}
 	}
 }
+
+    public void checkGameState(Status currStatus) {
+        if (myBoard.checkWin(currStatus)) { //if there's a win on the board do this
+            gameState = (currStatus == Status.CROSS) ? gameState.CROSSWIN : gameState.CIRCLEWIN; //if currState/turn is CROSS, CROSS WINS; else, CIRCLE WINS
+        } else if (myBoard.checkDraw()) {
+            gameState = gameStateTest.DRAW;
+        }
+    }
 
 	public static LinkedList<PlayerHandler> connectPlayer(ServerSocket serverSocket){
 		PlayerHandler player;
@@ -59,7 +91,7 @@ public class Server {
 				String userName = receive.readLine();
 				String password = receive.readLine();
 				if ((s = serverSocket.accept()) != null) {
-					player = createUser(userName, password,s);
+					player = createUser(userName, s, status);
                     matching.add(player);
 				}
 			}catch(IOException e){
@@ -69,10 +101,8 @@ public class Server {
 			return matching;
 	}
 
-
-
-	public static PlayerHandler createUser(String userName, String password, Socket s){
-			PlayerHandler player = new PlayerHandler(userName,password,s);
+	public static PlayerHandler createUser(String userName, Socket s, Status status){
+			PlayerHandler player = new PlayerHandler(userName,s,status);
 		    return player;
 	}
 
@@ -85,50 +115,40 @@ public class Server {
 		}
 	}
 
-    public class ServerGame{
 
-	public boolean connected = false;
+    public static class startGame implements Runnable{
 
-	private BufferedReader input;
-
-	private DataOutputStream output;
-
-
-
-
-	public ServerGame(PlayerHandler p1, PlayerHandler p2){
-		p1.getSocket();
-		p2.getSocket();
-	}
-}
-
-    public class startGame extends Thread{
-
-	    Thread t;
 	    private PlayerHandler p1, p2;
 
 	    public startGame(PlayerHandler p1, PlayerHandler p2)
         {
             this.p1 = p1;
             this.p2 = p2;
-            t.start();
 
         }
 
 	    public void run(){
+	        int i = 0;
+
             while(true){
+
                 if(matching.size()>=2)
                 {
                     p1 = matching.remove();
                     p2 = matching.remove();
-                    GameThread()
+                    i++;
+                    Game game = new Game(Integer.toString(i),p1,p2);
+                    game.startGame();
                 }
 
             }
 
         }
+        public void start(){
+	        System.out.print("New Game Started with " + p1.getUserName() + " and " + p2.getUserName());
+        }
     }
-    public class GameThread implements Runnable{
+    public class Game extends Thread{
 	    String name;
 	    Thread t;
         private Board myBoard;
@@ -138,10 +158,8 @@ public class Server {
 	    public GameThread(String thread, PlayerHandler p1, PlayerHandler p2){
 	        name = thread;
             t = new Thread(this,name);
-
-            t.start();
         }
-        public void run() {
+        public void run(){
 
             Board myBoard = new Board();
 
@@ -169,28 +187,7 @@ public class Server {
             currPlayer = Status.CROSS;
             gameState = gameStateTest.PLAYING;
         }
-        public void playerMove (Status currStatus) { //A player moves based on their assigned Piece (status)
-            boolean turnEnd = false;
-            do {
-                if (currStatus == Status.CROSS) {
-                    //Player 1 move
-                    System.out.println("Player 'X', enter your coordinates (row[0 - 2], col[0 - 2]): ");
-                } else {
-                    //Player 2 move
-                    System.out.println("Player 'O', enter your coordinates (row[0 - 2], col[0 - 2]): ");
-                }
-                int row = input.nextInt();
-                int col = input.nextInt();
-                if (row >= 0  && row < Board.maxRows && col >= 0 && col < Board.maxCol && myBoard.board[row][col].content == Status.EMPTY) {
-                    myBoard.board[row][col].content = currStatus;
-                    myBoard.currRow = row;
-                    myBoard.currCol = col;
-                    turnEnd = true;
-                } else{
-                    System.out.println("Invalid move");
-                }
-            } while (!turnEnd);
-        }
+
 
         public void checkGameState(Status currStatus) {
             if (myBoard.checkWin(currStatus)) { //if there's a win on the board do this
@@ -199,11 +196,6 @@ public class Server {
                 gameState = gameStateTest.DRAW;
             }
         }
-
-
-
-
-
     }
 
 
