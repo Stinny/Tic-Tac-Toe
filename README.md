@@ -1,4 +1,4 @@
-# TermProject
+# Tic Tac Toe
 This is the repository for our term project.
 
 
