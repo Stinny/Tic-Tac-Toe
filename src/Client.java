@@ -8,6 +8,8 @@ public class Client {
     private Socket socket = null;
     private DataInputStream input = null;
     private DataOutputStream out = null;
+    private Board board = new Board();
+    private BufferedReader clientInput;
 
     public Client(String address, int port)
     {
@@ -33,5 +35,16 @@ public class Client {
     }
     public void sendMove(int code) throws IOException{
         out.writeInt(code);
+    }
+    public void recieveMove(int cordX, int cordY){
+       // try {
+        //    //int clientInput.readLine();
+       // }catch(IOException e){
+       //     e.printStackTrace();
+       // }
+
+    }
+    public Board updateBoard(){
+        return board;
     }
 }
