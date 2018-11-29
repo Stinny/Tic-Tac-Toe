@@ -28,14 +28,12 @@ Members:
 
 Getting Started
 Install
-- 
+- Download repository
 
 Run
+- Run TicTacToe class
 
 Features
+- Server client connectivity
+- Interact with board
 Demo video (1-2 mins)
-
-# Comments
-1. Follow the template for README.md. You can download the template from Blackboard and modify the content accordingly. For example, the title should be Tic Tac Toe rather than term project
-2. Write more details on the deliverables. What features will be delivered for your application? Think about what you are going to demo in the final presentation and compile a list.
-3. Need to revise the plan for Week 4 and 5. Error testing and debugging should probably happen in Week 5 as well as during the development in other weeks
