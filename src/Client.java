@@ -10,6 +10,7 @@ public class Client {
     private DataOutputStream out = null;
     private Board board = new Board();
     private BufferedReader clientInput;
+    private static gameStateTest gameState;
 
     public Client(String address, int port)
     {
@@ -47,4 +48,17 @@ public class Client {
     public Board updateBoard(){
         return board;
     }
+    public void checkGameState(Status currStatus) {
+        if (board.checkWin(currStatus)) { //if there's a win on the board do this
+            gameState = (currStatus == Status.CROSS) ? gameState.CROSSWIN : gameState.CIRCLEWIN; //if currState/turn is CROSS, CROSS WINS; else, CIRCLE WINS
+        } else if (myBoard.checkDraw()) {
+            gameState = gameStateTest.DRAW;
+        }
+
+        checkGameState(p1.getStatus());
+
+        checkGameState(p2.getStatus());
+    }
+    }
+}
 }

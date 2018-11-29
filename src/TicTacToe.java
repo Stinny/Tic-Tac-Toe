@@ -162,6 +162,8 @@ public class TicTacToe extends Application {
 
 		hbox.getChildren().addAll(play,playerName);
 
+		return hbox;
+
 	}
 
 

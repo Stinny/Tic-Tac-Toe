@@ -12,7 +12,8 @@ import java.util.LinkedList;
  */
 public class Server {
     private static ServerSocket serverSocket;
-    private static gameStateTest gameState;
+    private static Board myBoard;
+
     private static Board board = new Board();
 
     public static PlayerHandler player;
@@ -69,13 +70,6 @@ public class Server {
 			}
 	}
 }
-    public void checkGameState(Status currStatus) {
-        if (myBoard.checkWin(currStatus)) { //if there's a win on the board do this
-            gameState = (currStatus == Status.CROSS) ? gameState.CROSSWIN : gameState.CIRCLEWIN; //if currState/turn is CROSS, CROSS WINS; else, CIRCLE WINS
-        } else if (myBoard.checkDraw()) {
-            gameState = gameStateTest.DRAW;
-        }
-    }
 	public static LinkedList<PlayerHandler> connectPlayer(ServerSocket serverSocket){
 		LinkedList<PlayerHandler> matching = new LinkedList<>();
 			try {
@@ -169,6 +163,7 @@ public class Server {
                 }
             }
         }
+
         public void parseCode(String clientResponse, PrintWriter out) throws Exception{
             String[] params = clientResponse.split(",");
             int code = Integer.parseInt((params[0]));
@@ -200,6 +195,10 @@ public class Server {
 
                     } catch (Exception e) {
                         e.printStackTrace();
+                    }
+                case(2)
+                    try {
+                        i
                     }
             }
         }
@@ -234,7 +233,7 @@ public class Server {
     public static class Game extends Thread{
 	    String name;
 	    Thread t;
-        private gameStateTest gameState;
+
         private Status currPlayer;
         PlayerHandler p1, p2;
 
@@ -250,23 +249,15 @@ public class Server {
             do {
                 if(turn) {
                     move(p1);
-                    checkGameState(p1.getStatus());
                     turn = false;
 
                 }else {
                     move(p2);
-                    checkGameState(p2.getStatus());
                     turn = true;
 
                 }
 
-                if (gameState == gameStateTest.CROSSWIN) {
-                    System.out.println("Cross won");
-                } else if (gameState == gameStateTest.CIRCLEWIN){
-                    System.out.println("Circle won");
-                } else if (gameState == gameStateTest.DRAW) {
-                    System.out.println("It's a draw");
-                }
+
             } while (gameState == gameStateTest.PLAYING);
         }
         public void move (PlayerHandler player) { //A player moves based on their assigned Piece (status)
@@ -291,12 +282,5 @@ public class Server {
             currPlayer = Status.CROSS;
             gameState = gameStateTest.PLAYING;
         }
-        public void checkGameState(Status currStatus) {
-            if (board.checkWin(currStatus)) { //if there's a win on the board do this
-                gameState = (currStatus == Status.CROSS) ? gameState.CROSSWIN : gameState.CIRCLEWIN; //if currState/turn is CROSS, CROSS WINS; else, CIRCLE WINS
-            } else if (myBoard.checkDraw()) {
-                gameState = gameStateTest.DRAW;
-            }
-        }
-    }
+
 }
