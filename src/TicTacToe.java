@@ -26,7 +26,6 @@ import javafx.scene.text.*;
 
 import javafx.geometry.Pos;
 
-
 public class TicTacToe extends Application {
 
 	Client client = new Client("127.0.0.1", 80);
@@ -44,60 +43,79 @@ public class TicTacToe extends Application {
 
 		root.setCenter(addHBox());
 
-		
-		//Scene 1
-		Label label1= new Label("This is the first scene");
-		Button button1= new Button("Go to scene 2");
-		button1.setOnAction(e -> primaryStage.setScene(sc2));   
-		//HBox login = addHBox();
-		VBox layout1 = new VBox(20);     
+		GridPane gridPane = new GridPane();
+		gridPane.setAlignment(Pos.CENTER);
+		gridPane.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
+		gridPane.setPadding(new Insets(15));
+
+		for (int i = 0; i < 3; i++) {
+			for (int j = 0; j < 3; j++) {
+				Button button = new Button();
+				button.setMaxWidth(Double.MAX_VALUE);
+				button.setMaxHeight(Double.MAX_VALUE);
+				gridPane.add(button, i, j);
+				GridPane.setHgrow(button, Priority.ALWAYS);
+				GridPane.setVgrow(button, Priority.ALWAYS);
+			}
+		}
+
+		// Scene 1
+		Label label1 = new Label("This is the first scene");
+		Button button1 = new Button("Go to scene 2");
+		button1.setOnAction(e -> primaryStage.setScene(sc2));
+		// HBox login = addHBox();
+		VBox layout1 = new VBox(20);
 		layout1.getChildren().addAll(label1, button1);
-		sc1= new Scene(layout1, 300, 250);
-		               
-		//Scene 2
-		Label label2= new Label("This is the second scene");
-		Button button2= new Button("Go to scene 1");
+		sc1 = new Scene(layout1, 300, 250);
+
+		// Scene 2
+		Label label2 = new Label("This is the second scene");
+		Button button2 = new Button("Go to scene 1");
 		button2.setOnAction(e -> primaryStage.setScene(sc1));
-		VBox layout2= new VBox(20);
+		VBox layout2 = new VBox(20);
 		layout2.getChildren().addAll(label2, button2);
-		sc2= new Scene(layout2,300,250);
-		
+		sc2 = new Scene(layout2, 300, 250);
+
 		play.setOnMouseClicked(e -> {
 			primaryStage.setScene(sc2);
-			//root.setCenter(addHBox2());
-			
+			// root.setCenter(addHBox2());
+
 			try {
 				client.sendMove(0);
-			}catch(IOException i){
-				i.printStackTrace();;
+			} catch (IOException i) {
+				i.printStackTrace();
+				;
 			}
 		});
 
-
 	}
-	public HBox addHBox(){
+
+	public HBox addHBox() {
 		HBox hbox = new HBox();
 
 		Button play = new Button("PLAY");
 
-		playerName.setPromptText("Enter player name"); //sets the prompt text for player name text field
+		playerName.setPromptText("Enter player name"); // sets the prompt text
+														// for player name text
+														// field
 
-		hbox.getChildren().addAll(play,playerName);
+		hbox.getChildren().addAll(play, playerName);
 
 		return hbox;
 	}
-	public HBox addHBox2(){
+
+	public HBox addHBox2() {
 		HBox hbox = new HBox();
 
 		Button play = new Button("PL");
 
-		playerName.setPromptText("Enter"); //sets the prompt text for player name text field
+		playerName.setPromptText("Enter"); // sets the prompt text for player
+											// name text field
 
-		hbox.getChildren().addAll(play,playerName);
+		hbox.getChildren().addAll(play, playerName);
 
 		return hbox;
 	}
-
 
 	public static void main(String[] args) {
 
