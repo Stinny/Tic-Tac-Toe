@@ -94,37 +94,48 @@ public class Server {
     }
 }
 
-    class PlayerHandler{
+    class PlayerHandler extends Thread{
+        char mark;
         private String name;
         private Socket socket;
-        private Status content;
-        private int coordX;
-        private int coordY;
-        private boolean end;
+        private Status mark;
 
-        public PlayerHandler(Socket userSocket, Status content) {
-            this.socket = userSocket;
-            this.content = content;
-            this.end = false;
+        PlayerHandler opponent;
+
+        public PlayerHandler(Socket socket, char mark) {
+            this.socket = socket;
+            this.mark = mark;
+            try{
+            // initialize input and output streams
+            BufferedReader in = new BufferedReader(
+                    new InputStreamReader(socket.getInputStream()));
+            PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+            } catch(IOException e)
         }
 
         public void setPiece(Status content){
             this.content = content;
         }
 
-        public void read() {
+        public void setOpponent(PlayerHandler opponent){
+            this.opponent = opponent;
+
+        }
+
+        public void otherPlayerMoved(int location){
+            out.println("OPPONENT_MOVED" + location);
+            out.println(
+                    hasWinner() ? "DEFEAT" : boardFilledUp() ? "TIE" : "");
+        }
+
+        public void turn() {
             String clientResponse;
             try {
-                // initialize input and output streams
-                BufferedReader in = new BufferedReader(
-                        new InputStreamReader(socket.getInputStream()));
-                PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
 
-                while (true) {
                     // read and parse Client response
                     clientResponse = in.readLine();
                     parseCode(clientResponse, out);
-                }
+
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (Exception e) {
@@ -260,10 +271,12 @@ public class Server {
             boolean turnEnd = false;
             do {
                 if (player.getStatus() == Status.CROSS) {
+                    player.turn();
 
                     //System.out.println("Player 'X', enter your coordinates (row[0 - 2], col[0 - 2]): ");
                 } else if (player.getStatus() == Status.CIRCLE) {
-                    System.out.println("Player 'O', enter your coordinates (row[0 - 2], col[0 - 2]): ");
+                    player.turn();
+                    //System.out.println("Player 'O', enter your coordinates (row[0 - 2], col[0 - 2]): ");
                 }
 
                 int row = player.getCoordX();

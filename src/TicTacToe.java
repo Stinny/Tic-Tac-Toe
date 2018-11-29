@@ -1,11 +1,8 @@
-import java.io.IOException;
+import java.io.*;
 
+import java.net.Socket;
 import java.net.URL;
-
-
 import javax.imageio.ImageIO;
-
-
 import javafx.application.Application;
 
 import javafx.geometry.Insets;
@@ -38,6 +35,11 @@ import javafx.scene.text.Text;
 
 import javafx.stage.Stage;
 
+import java.net.*;
+
+import java.io.*;
+
+
 
 public class TicTacToe extends Application {
 
@@ -51,9 +53,6 @@ public class TicTacToe extends Application {
 
 
 	Parent buildScene() {
-
-		Text text = new Text("Tres en raya");
-
 
 		GridPane gridPane = new GridPane();
 
@@ -207,7 +206,7 @@ public class TicTacToe extends Application {
 
 		client.setStatus();
 
-		System.out.print(client.getStatus());
+		//System.out.print(client.getStatus());
 
 		topLeft.setOnMouseClicked(e -> {
 
@@ -218,173 +217,199 @@ public class TicTacToe extends Application {
 				String move = "1,0,0,0";
 
 				try {
-
 					client.sendMove(move);}
-
 				catch(IOException a){
-
 					a.printStackTrace();
-
 				}
 			}
 			else if(client.getStatus()==Status.CIRCLE){
 				topLeft.setGraphic(new ImageView(circle));
-
 				String move = "1,0,0,1";
-
 				try {
-
 					client.sendMove(move);}
-
 				catch(IOException a){
-
 					a.printStackTrace();
-
 				}
 			}
-
-
-
 		});
 
 		topCenter.setOnMouseClicked(e -> {
 			if(client.getStatus()==Status.CROSS) {
 				topCenter.setGraphic(new ImageView(cross));
+
+				String move = "1,0,1,1";
+
+				try {
+					client.sendMove(move);}
+				catch(IOException a){
+					a.printStackTrace();
+				}
 			}
 			else if(client.getStatus()==Status.CIRCLE){
 				topCenter.setGraphic(new ImageView(circle));
+
+				String move = "1,0,1,0";
+
+				try {
+					client.sendMove(move);}
+				catch(IOException a){
+					a.printStackTrace();
+				}
 			}
-
-			String move = "1,0,1";
-
-			try{
-
-				client.sendMove(move);}
-
-			catch(IOException a) {
-
-				a.printStackTrace();
-
-			}
-
 		});
 
 		topRight.setOnMouseClicked(e -> {
 			if(client.getStatus()==Status.CROSS) {
 				topRight.setGraphic(new ImageView(cross));
+
+				String move = "1,0,2,1";
+
+				try {
+					client.sendMove(move);}
+				catch(IOException a){
+					a.printStackTrace();
+				}
 			}
 			else if(client.getStatus()==Status.CIRCLE){
 				topRight.setGraphic(new ImageView(circle));
+
+				String move = "1,0,2,0";
+
+				try {
+					client.sendMove(move);}
+				catch(IOException a){
+					a.printStackTrace();
+				}
 			}
 
-			String move = "1,0,2";
-
-			try{
-
-				client.sendMove(move);
-
-			} catch(IOException a) {
-
-				a.printStackTrace();
-			}
 		});
 
 		midLeft.setOnMouseClicked(e -> {
 			if(client.getStatus()==Status.CROSS) {
 				midLeft.setGraphic(new ImageView(cross));
+				String move = "1,1,0,1";
+				try {
+					client.sendMove(move);}
+				catch(IOException a){
+					a.printStackTrace();
+				}
 			}
 			else if(client.getStatus()==Status.CIRCLE){
 				midLeft.setGraphic(new ImageView(circle));
+				String move = "1,1,0,0";
+				try {
+					client.sendMove(move);}
+				catch(IOException a){
+					a.printStackTrace();
+				}
 			}
-			String move = "1,1,0";
-			try {
-				client.sendMove(move);
-			} catch(IOException a) {a.printStackTrace();
-			}
-
-
-
 		});
 
 		midCenter.setOnMouseClicked(e -> {
 			if(client.getStatus()==Status.CROSS) {
 				midCenter.setGraphic(new ImageView(cross));
+				String move = "1,1,1,1";
+				try {
+					client.sendMove(move);}
+				catch(IOException a){
+					a.printStackTrace();
+				}
 			}
 			else if(client.getStatus()==Status.CIRCLE){
 				midCenter.setGraphic(new ImageView(circle));
-			}
-			String move = "1,1,1";
-			try{
-				client.sendMove(move);
-			} catch(IOException a) {
-				a.printStackTrace();
+				String move = "1,1,1,0";
+				try {
+					client.sendMove(move);}
+				catch(IOException a){
+					a.printStackTrace();
+				}
 			}
 		});
 
 		midRight.setOnMouseClicked(e -> {
 			if(client.getStatus()==Status.CROSS) {
 				midRight.setGraphic(new ImageView(cross));
+				String move = "1,1,2,0";
+				try {
+					client.sendMove(move);}
+				catch(IOException a){
+					a.printStackTrace();
+				}
 			}
 			else if(client.getStatus()==Status.CIRCLE){
 				midRight.setGraphic(new ImageView(circle));
-			}
-			String move = "1,1,2";
-			try {
-				client.sendMove(move);
-			} catch (IOException a) {
-				a.printStackTrace();
+
+				String move = "1,1,2,0";
+				try {
+					client.sendMove(move);}
+				catch(IOException a){
+					a.printStackTrace();
+				}
 			}
 		});
 
 		botLeft.setOnMouseClicked(e -> {
 			if(client.getStatus()==Status.CROSS) {
 				botLeft.setGraphic(new ImageView(cross));
+				String move = "1,2,0,1";
+				try {
+					client.sendMove(move);}
+				catch(IOException a){
+					a.printStackTrace();
+				}
 			}
 			else if(client.getStatus()==Status.CIRCLE){
 				botLeft.setGraphic(new ImageView(circle));
-			}
-
-			String move = "1,2,0";
-
-			try {
-				client.sendMove(move);
-			} catch (IOException a) {
-				a.printStackTrace();
+				String move = "1,2,0,0";
+				try {
+					client.sendMove(move);}
+				catch(IOException a){
+					a.printStackTrace();
+				}
 			}
 		});
 
 		botCenter.setOnMouseClicked(e -> {
 			if(client.getStatus()==Status.CROSS) {
 				botCenter.setGraphic(new ImageView(cross));
+				String move = "1,2,1,1";
+				try {
+					client.sendMove(move);}
+				catch(IOException a){
+					a.printStackTrace();
+				}
 			}
 			else if(client.getStatus()==Status.CIRCLE){
 				botCenter.setGraphic(new ImageView(circle));
-			}
-
-			String move = "1,2,1";
-
-			try {
-				client.sendMove(move);
-			} catch (IOException a) {
-				a.printStackTrace();
+				String move = "1,2,1,0";
+				try {
+					client.sendMove(move);}
+				catch(IOException a){
+					a.printStackTrace();
+				}
 			}
 		});
 
 		botRight.setOnMouseClicked(e -> {
 			if(client.getStatus()==Status.CROSS) {
 				botRight.setGraphic(new ImageView(cross));
+				String move = "1,2,2,1";
+				try {
+					client.sendMove(move);}
+				catch(IOException a){
+					a.printStackTrace();
+				}
 			}
 			else if(client.getStatus()==Status.CIRCLE){
 				botRight.setGraphic(new ImageView(circle));
+				String move = "1,2,2,0";
+				try {
+					client.sendMove(move);}
+				catch(IOException a){
+					a.printStackTrace();
+				}
 			}
 
-			String move = "1,2,2";
-
-			try {
-				client.sendMove(move);
-			} catch (IOException a) {
-				a.printStackTrace();
-			}
 		});
 
 
@@ -432,7 +457,248 @@ public class TicTacToe extends Application {
 
 		primaryStage.show();
 	}
-public static void main(String[] args) {
+
+
+	/**
+	 * Created by lucasraza on 11/27/18.
+	 */
+
+	public class Client {
+		private Socket socket = null;
+		private DataInputStream input = null;
+		private Board board = new Board();
+		private PrintWriter out;
+		private gameStateTest gameState;
+		private Status status;
+
+		public Client(String address, int port)
+		{
+			try {
+				socket = new Socket(address, port);
+				System.out.println("Connected");
+
+				// takes input from terminal
+				input = new DataInputStream(System.in);
+
+				// sends output to the socket
+				out = new PrintWriter(socket.getOutputStream(),true);
+			}
+			catch(IOException i){
+				System.out.println(i);
+			}
+		}
+		public void setStatus(){
+			try {
+				sendMove("3");
+
+				BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+				Boolean token = input.ready();
+				if(token){
+					status = Status.CROSS;
+				}else if(!token);
+				{
+					status = Status.CIRCLE;
+				}
+			}catch(IOException e){
+				e.printStackTrace();
+			}
+		}
+		public Status getStatus(){
+			return this.status;
+		}
+		public DataInputStream getInputStream(){
+			return input;
+		}
+
+		public void sendMove(String code) throws IOException{
+			out.write(code);
+		}
+
+		public boolean updateOppMove(){
+			boolean flag = false;
+			try {
+
+				BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+
+				if(status==Status.CROSS){
+					board.setCoordX(input.read(),input.read());
+					flag = true;
+				}
+				else
+					board.setCoordO(input.read(),input.read());
+				flag = true;
+
+			}catch(IOException i)
+			{
+				i.printStackTrace();
+			}
+			return flag;
+
+		}
+		public Board updateBoard(){
+			return board;
+		}
+		public void checkGameState(Status currStatus) {
+			if (board.checkWin(currStatus)) { //if there's a win on the board do this
+				gameState = (currStatus == Status.CROSS) ? gameState.CROSSWIN : gameState.CIRCLEWIN; //if currState/turn is CROSS, CROSS WINS; else, CIRCLE WINS
+			} else if (board.checkDraw()) {
+				gameState = gameStateTest.DRAW;
+			}
+		}
+
+	}
+
+	public class Board {
+		public int maxRows = 3, maxCol = 3;
+		public Cell[][] board;
+		public int currRow, currCol;
+
+		public Board() {
+			board = new Cell[maxRows][maxCol];
+			for (int row = 0; row < maxRows; row++) { // Initialize a 3x3 array of
+				// CELLS with starting enum
+				// status of EMPTY
+				for (int col = 0; col < maxCol; col++) {
+					board[row][col] = new Cell(row, col);
+				}
+			}
+		}
+
+		public void startNew() {
+			for (int row = 0; row < maxRows; row++) {
+				for (int col = 0; col < maxCol; col++) {
+					board[row][col].setEmpty();
+				}
+			}
+		}
+
+		public boolean checkDiagonalCase(Status currContent) {
+
+			if (board[1][1].content == currContent) {
+				if ((board[0][0].content == currContent && board[2][2].content == currContent) // if
+						// diagonal
+						// from
+						// [0][0]
+						// to
+						// [2][2]
+						|| (board[0][2].content == currContent && board[2][0].content == currContent)) {// or
+					// diagonal
+					// from
+					// [0][2]
+					// to
+					// [2][0]
+					return true;
+				}
+			}
+//		else if (board[1][1].content == Status.CROSS) {
+//			if ((board[0][0].content == Status.CROSS && board[2][2].content == Status.CROSS) // if
+//																								// diagonal
+//																								// from
+//																								// [0][0]
+//																								// to
+//																								// [2][2]
+//					|| (board[0][2].content == Status.CROSS && board[2][0].content == Status.CROSS)) {// or
+//																										// diagonal
+//																										// from
+//																										// [0][2]
+//																										// to
+//																										// [2][0]
+//				return true;
+//			}
+//		}
+
+			return false;
+		}
+
+		public boolean checkHorizontalCase(Status currStatus) {
+
+			for (int col = 0; col < maxCol; col++) {
+				int row = 0;
+				if (board[row][col].content == currStatus) {
+					row++;
+					if (board[row][col].content == currStatus) {
+						row++;
+						if (board[row][col].content == currStatus) {
+							return true;
+						}
+					}
+				}
+//			else if (board[row][col].content == Status.CROSS) {
+//				row++;
+//				if (board[row][col].content == Status.CROSS) {
+//					row++;
+//					if (board[row][col].content == Status.CROSS) {
+//						return true;
+//					}
+//				}
+//			}
+			}
+			return false;
+		}
+
+		public boolean checkVerticalCase(Status currStatus) {
+
+			for (int row = 0; row < maxRows; row++) {
+				int col = 0;
+				if (board[row][col].content == currStatus) {
+					col++;
+					if (board[row][col].content == currStatus) {
+						col++;
+						if (board[row][col].content == currStatus) {
+							return true;
+						}
+					}
+				}
+//			else if (board[row][col].content == Status.CROSS) {
+//				col++;
+//				if (board[row][col].content == Status.CROSS) {
+//					col++;
+//					if (board[row][col].content == Status.CROSS) {
+//						return true;
+//					}
+//				}
+//			}
+			}
+			return false;
+		}
+
+		public void setCoordX(int row, int col) {
+			board[row][col].setCross();
+		}
+
+		public void setCoordO(int row, int col) {
+			board[row][col].setCircle();
+		}
+
+		public boolean checkDraw() {
+			for (int row = 0; row < maxRows; ++row) {
+				for (int col = 0; col < maxCol; ++col) {
+					if (board[row][col].content == Status.EMPTY) {
+						return false; // if there is an empty cell, there can't be a
+						// draw
+					}
+				}
+			}
+			return true; // if there is not a single empty cell, all spaces have
+			// been filled and no one has won yet
+		}
+
+		public boolean checkWin(Status currStatus) {
+			if (this.checkDiagonalCase(currStatus) || this.checkVerticalCase(currStatus)  || this.checkHorizontalCase(currStatus)) {
+				return true;
+			} else
+				return false;
+		}
+
+		// if checkWin() returns true the game should end and the current player's
+		// turn is the winner
+		// if false continue whatever loop keeping the game running
+
+	}
+
+
+
+	public static void main(String[] args) {
 		launch(args);
 	}
 }
