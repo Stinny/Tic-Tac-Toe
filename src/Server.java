@@ -2,6 +2,7 @@
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 
@@ -12,133 +13,106 @@ import java.util.LinkedList;
  */
 public class Server {
     private static ServerSocket serverSocket;
-    private static Board myBoard;
-
-    private static Board board = new Board();
-
     public static PlayerHandler player;
+    public static LinkedList<PlayerHandler> matching;
+    public static HashMap<String, Game> games;
 
-	public static LinkedList<PlayerHandler> matching;
-
-	public static HashMap<String, Thread> games;
-
-	public Server(int port) throws IOException{
-	    serverSocket = new ServerSocket(port);
+    public Server(int port) throws IOException {
+        serverSocket = new ServerSocket(port);
     }
-	public static void main(String[] args){
+    public static void main(String[] args) {
+        int PORT = 3000;
+        // Have the server run until it is killed.
 
-		int PORT = 2000;
-		// Have the server run until it is killed.
-		while(true)
-		{
-			// Monitor connections to PORT (if it is available).
-			try
-			{
+            // Monitor connections to PORT (if it is available).
+            try {
+                System.out.println("Starting server on port# " + PORT);
                 Server server = new Server(PORT);
 
-                serverSocket.accept();
-				//System.out.println("The server is now running on port " + PORT + "...");
+                //System.out.println("The server is now running on port " + PORT + "...");
+                int i = 0;
+                matching = new LinkedList<>();
+                boolean x = true;
+                while (true) {
 
-				Socket connectionSocket = serverSocket.accept();
-				//System.out.println("A user has connected from " + connectionSocket.getInetAddress());
+                    Socket connectionSocket = serverSocket.accept();
+                    System.out.println("A user has connected from " + connectionSocket.getInetAddress());
 
-				BufferedReader clientInput = new BufferedReader(new InputStreamReader(connectionSocket.getInputStream()));
+                    BufferedReader clientInput = new BufferedReader(new InputStreamReader(connectionSocket.getInputStream()));
 
-				DataOutputStream serverOutput = new DataOutputStream(connectionSocket.getOutputStream());
+                    DataOutputStream serverOutput = new DataOutputStream(connectionSocket.getOutputStream());
 
-				//Gets user's info and connects player
-				matching = connectPlayer(serverSocket);
+                    if (connectionSocket!= null) {
+                        PlayerHandler player;
+                        if(x) {
+                           player = createUser(connectionSocket, Status.CROSS);
+                        }else
+                            player = createUser(connectionSocket, Status.CIRCLE);
 
-				//Store matched players in a HashMap
-                PlayerHandler p1 = matching.removeLast();
-                PlayerHandler p2 = matching.removeLast();
-                StartGame game = new StartGame(p1,p2);
+                        matching.add(player);
+                    }
 
-                //Create Game
-                Thread newGame = new Thread(game);
-                newGame.start();
+                    if(matching.size()==2) {
+                        PlayerHandler p1 = matching.removeLast();
+                        PlayerHandler p2 = matching.removeLast();
 
-                //Store above process as a thread in a HashMap
-                games.put(newGame.getName(), newGame);
+                        p1.setPiece(Status.CROSS);
+                        p2.setPiece(Status.CIRCLE);
 
-                //Tic Tac Toe Room Implementation
+                        Game game = new Game(Integer.toString(i), p1, p2);
+                        i++;
 
-                //games.
-			}catch(IOException e)
-			{
-				System.err.println(e);
-			}
-	}
-}
-	public static LinkedList<PlayerHandler> connectPlayer(ServerSocket serverSocket){
-		LinkedList<PlayerHandler> matching = new LinkedList<>();
-			try {
-				Socket s = serverSocket.accept();
-				BufferedReader receive = new BufferedReader(new InputStreamReader(s.getInputStream()));
-				if ((s = serverSocket.accept()) != null) {
-					player = createUser(player.getUserName(), s, Status.EMPTY );
-                    matching.add(player);
-				}
-			}catch(IOException e){
-				System.out.println(e);
+                        System.out.println(p1.getStatus() + " connected");
+                        System.out.println(p2.getStatus() + " connected");
+                        game.start();
 
-			}
-			return matching;
-	}
-	public static PlayerHandler createUser(String userName, Socket s, Status status){
-            player = new PlayerHandler(s,status);
-		    return player;
-	}
-	private boolean connected(String userName, Socket chatSocket) {
-		if (chatSocket.isConnected()) {
-			System.out.println(userName + " has connected to server on port: " + chatSocket.getLocalPort() + ". IP Address: " + chatSocket.getInetAddress());
-			return true;
-		} else {
-			return false;
-		}
-	}
-    public static class StartGame implements Runnable{
+                        String name = Integer.toString(i);
 
-	    private PlayerHandler p1, p2;
-
-	    public StartGame(PlayerHandler p1, PlayerHandler p2)
-        {
-            this.p1 = p1;
-            this.p2 = p2;
-        }
-
-	    public void run(){
-	        int i = 0;
-
-            while(true){
-                if(matching.size()>=2)
-                {
-                    p1 = matching.remove();
-                    p2 = matching.remove();
-                    i++;
-                    Game game = new Game(Integer.toString(i),p1,p2);
-                    game.startGame();
+                        games = new HashMap<>();
+                        games.put(name, game);
+                        System.out.println("game made and stored");
+                    }
                 }
+
+            } catch (IOException e) {
+                System.err.println(e);
             }
-        }
-        public void start(){
-	        System.out.print("New Game Started with " + p1.getUserName() + " and " + p2.getUserName());
+
+  }
+    public static PlayerHandler createUser(Socket s, Status status) {
+        player = new PlayerHandler(s, status);
+        return player;
+    }
+
+    private boolean connected(String userName, Socket chatSocket) {
+        if (chatSocket.isConnected()) {
+            System.out.println(userName + " has connected to server on port: " + chatSocket.getLocalPort() + ". IP Address: " + chatSocket.getInetAddress());
+            return true;
+        } else {
+            return false;
         }
     }
-    public static class PlayerHandler implements Runnable {
+}
+
+    class PlayerHandler{
         private String name;
         private Socket socket;
         private Status content;
         private int coordX;
         private int coordY;
+        private boolean end;
 
-        public PlayerHandler(Socket userSocket, Status content)
-        {
+        public PlayerHandler(Socket userSocket, Status content) {
             this.socket = userSocket;
+            this.content = content;
+            this.end = false;
+        }
+
+        public void setPiece(Status content){
             this.content = content;
         }
 
-        public void run(){
+        public void read() {
             String clientResponse;
             try {
                 // initialize input and output streams
@@ -164,11 +138,13 @@ public class Server {
             }
         }
 
-        public void parseCode(String clientResponse, PrintWriter out) throws Exception{
+        public void parseCode(String clientResponse, PrintWriter out) throws Exception {
             String[] params = clientResponse.split(",");
             int code = Integer.parseInt((params[0]));
 
-            switch(code) {
+            out = new PrintWriter(socket.getOutputStream(),true);
+
+            switch (code) {
                 case (0):
                     try {
                         String username = params[1];
@@ -182,8 +158,6 @@ public class Server {
                         int cordX = Integer.parseInt(params[1]);
                         int cordY = Integer.parseInt(params[2]);
 
-                        int cCode = 0;
-
                         String x = Integer.toString(cordX);
                         String y = Integer.toString(cordY);
 
@@ -191,82 +165,104 @@ public class Server {
                         out.flush();
                         out.println(y);
                         out.flush();
-                        out.println(code);
 
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
-                case(2)
-                    try {
-                        i
-                    }
+                case(2):
+                      try {
+                            String winner = params[1];
+                            end = true;
+                            socket.close();
+                      }
+                      catch(IOException i) {
+                          i.printStackTrace();
+                      }
+                case(3):
+                        if(getStatus() == Status.CROSS) {
+                            System.out.println("Yes");
+                            out.print(true);
+                        }else if(getStatus() == Status.CIRCLE){
+                            System.out.println("Yes");
+                            out.print(false);
+                        }
             }
         }
-        public void setUserName(String username){
+
+        public boolean getEnd(){
+            end = true;
+            return end;
+
+        }
+        public void setUserName(String username) {
             this.name = username;
         }
-        public String getUserName(){
+
+        public String getUserName() {
             return name;
         }
-        public Socket getSocket(){
+
+        public Socket getSocket() {
             return socket;
         }
-        public void changeUserName(String newUser) {
-            name = newUser;
-        }
-        public Status getStatus(){
+
+        public Status getStatus() {
             return content;
         }
-        public int getCoordX(){
+
+        public int getCoordX() {
             return this.coordX;
         }
-        public int getCoordY(){
+
+        public int getCoordY() {
             return this.coordY;
         }
-        public void setCoordX(int coordX){
+
+        public void setCoordX(int coordX) {
             this.coordX = coordX;
         }
-        public void setCoordY(int coordY){
+
+        public void setCoordY(int coordY) {
             this.coordY = coordY;
         }
     }
-    public static class Game extends Thread{
-	    String name;
-	    Thread t;
+
+    class Game extends Thread {
+        String name;
+        Thread t;
+        boolean playing = true;
 
         private Status currPlayer;
         PlayerHandler p1, p2;
 
-	    public Game(String thread, PlayerHandler p1, PlayerHandler p2){
-	        name = thread;
-            t = new Thread(this,name);
+        public Game(String thread, PlayerHandler p1, PlayerHandler p2) {
+            name = thread;
+            t = new Thread(this, name);
             this.p1 = p1;
             this.p2 = p2;
         }
-        public void run(){
-            startGame();
+
+        public void run() {
             boolean turn = true;
             do {
-                if(turn) {
+                if (turn) {
                     move(p1);
                     turn = false;
-
-                }else {
+                } else {
                     move(p2);
                     turn = true;
-
                 }
-
-
-            } while (gameState == gameStateTest.PLAYING);
+            } while (p1.getEnd() || p2.getEnd());
         }
-        public void move (PlayerHandler player) { //A player moves based on their assigned Piece (status)
+
+        public void move(PlayerHandler player) { //A player moves based on their assigned Piece (status)
             boolean turnX = true;
             boolean turnEnd = false;
             do {
                 if (player.getStatus() == Status.CROSS) {
-                    System.out.println("Player 'X', enter your coordinates (row[0 - 2], col[0 - 2]): ");
-                } else {
+
+                    //System.out.println("Player 'X', enter your coordinates (row[0 - 2], col[0 - 2]): ");
+                } else if (player.getStatus() == Status.CIRCLE) {
                     System.out.println("Player 'O', enter your coordinates (row[0 - 2], col[0 - 2]): ");
                 }
 
@@ -275,12 +271,7 @@ public class Server {
 
                 Socket s = player.getSocket();
 
-
             } while (!turnEnd); //
         }
-        public void startGame() {
-            currPlayer = Status.CROSS;
-            gameState = gameStateTest.PLAYING;
-        }
-
 }
+
