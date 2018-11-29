@@ -6,7 +6,7 @@ Project name: Multi player Tic Tac Toe
 
 Description: Develop an application where two players can connect with each other through TCP connection and play a game of Tic Tac Toe
 
-Delivarabels:
+Delivarables:
 
 - Working application with full functionality
 - Full user interface(Look nice)
