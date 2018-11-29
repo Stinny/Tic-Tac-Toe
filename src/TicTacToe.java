@@ -52,9 +52,6 @@ public class TicTacToe extends Application {
 
 	Parent buildScene() {
 
-		Text text = new Text("Tres en raya");
-
-
 		GridPane gridPane = new GridPane();
 
 		gridPane.setAlignment(Pos.CENTER);
