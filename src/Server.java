@@ -280,8 +280,8 @@ public class Server {
                     System.out.println("Player 'O', enter your coordinates (row[0 - 2], col[0 - 2]): ");
                 }
 
-                int row = player.getCoordX()
-                int col = player.getCoordY()
+                int row = player.getCoordX();
+                int col = player.getCoordY();
                 if (row >= 0  && row < Board.maxRows && col >= 0 && col < Board.maxCol && myBoard.board[row][col].content == Status.EMPTY) {
                     board.board[row][col].content = currStatus;
                     board.currRow = row;
