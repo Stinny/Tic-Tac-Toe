@@ -5,6 +5,8 @@ import java.net.URL;
 import javax.imageio.ImageIO;
 import javafx.application.Application;
 
+import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 
@@ -24,6 +26,7 @@ import javafx.scene.image.Image;
 
 import javafx.scene.image.ImageView;
 
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 
 import javafx.scene.layout.HBox;
@@ -49,14 +52,14 @@ public class TicTacToeGUI extends Application{
 	private static BufferedReader in;
 	private static PrintWriter out;
 	private static int PORT = 4444;
-	private static Button topCenter, topLeft, topRight, midLeft, midCenter, midRight, botLeft, botMid, botRight;
-	private static ImageView icon;
-	private static ImageView opponentIcon;
+	public static Button topCenter, topLeft, topRight, midLeft, midCenter, midRight, botLeft, botMid, botRight;
+	public static ImageView icon;
+	public static ImageView opponentIcon;
 	private static String zero, one, two, three, four, five, six, seven, eight;
-
-
-	private static Image Circle = new Image("Circle.png");
 	private static Image Cross = new Image("Cross.png");
+
+
+
 
 	Parent buildScene() {
 
@@ -83,8 +86,6 @@ public class TicTacToeGUI extends Application{
 		GridPane.setHgrow(topLeft, Priority.ALWAYS);
 
 		GridPane.setVgrow(topLeft, Priority.ALWAYS);
-
-
 
 
 		topCenter = new Button();
@@ -234,41 +235,48 @@ public class TicTacToeGUI extends Application{
 
 		return vBox;
 	}
-
-	public static void handleButtonClick(Button button, ImageView mark){
-			button.setGraphic(mark);
-
-			if(button.toString().equals(zero)){
-				out.println("MOVE0");
-			}
-			else if(button.toString().equals(one)){
-			out.println("MOVE1");
-			}
-			else if(button.toString().equals(two)){
-			out.println("MOVE2");
-			}
-			else if(button.toString().equals(three)){
-			out.println("MOVE3");
-			}
-			else if(button.toString().equals(four)){
-			out.println("MOVE4");
-			}
-			else if(button.toString().equals(five)){
-			out.println("MOVE5");
-			}
-			else if(button.toString().equals(six)){
-			out.println("MOVE6");
-			}
-			else if(button.toString().equals(seven)){
-			out.println("MOVE7");
-			}
-			else if(button.toString().equals(eight)){
-			out.println("MOVE8");
-			}
+	public void setGraphic(Button button,ImageView graphic){
+		button.setGraphic(graphic);
 	}
-
-
-
+	public Button getButton0(){
+		return topLeft;
+	}
+	public Button getButton1(){
+		return topCenter;
+	}
+	public Button getButton2(){
+		return topRight;
+	}
+	public Button getButton3(){
+		return midLeft;
+	}
+	public Button getButton4(){
+		return midCenter;
+	}
+	public Button getButton5(){
+		return midRight;
+	}
+	public Button getButton6(){
+		return botLeft;
+	}
+	public Button getButton7(){
+		return botMid;
+	}
+	public Button getButton8(){
+		return botRight;
+	}
+	public void setIcon(ImageView icon){
+		this.icon = icon;
+	}
+	public void setOpponentIcon(ImageView opponentIcon){
+		this.opponentIcon = opponentIcon;
+	}
+	public ImageView getIcon(){
+		return icon;
+	}
+	public ImageView getOpponentIcon(){
+		return opponentIcon;
+	}
 
 	@Override
 
@@ -299,36 +307,38 @@ public class TicTacToeGUI extends Application{
 		primaryStage.setScene(sc1);
 
 		primaryStage.show();
-
-
-
 	}
 
 
 
 
-	// if checkWin() returns true the game should end and the current player's
-	// turn is the winner
-	// if false continue whatever loop keeping the game running
 
-	public static void main(String[] args) throws Exception {
-				launch(args);
-		  		StartTicTacToe("127.0.0.1");
 	}
+	class LaunchTicTacToe {
 
+	private static BufferedReader in;
+	private static PrintWriter out;
+	private static TicTacToeGUI gui;
+	private static ImageView icon, opponentIcon;
+	private static Image Circle = new Image("Circle.png");
+	private static Image Cross = new Image("Cross.png");
+	private static Socket socket;
 
-
-		public static void StartTicTacToe(String serverAddress) {
+		public LaunchTicTacToe(String serverAddress) {
 			try {
-				socket = new Socket(serverAddress, 12345);
+				socket = new Socket(serverAddress, 6666);
 				in = new BufferedReader(new InputStreamReader(
 						socket.getInputStream()));
 				out = new PrintWriter(socket.getOutputStream(), true);
 				play();
+
 			} catch (IOException e) {
 				System.out.println(e);
 			}
 
+		}
+		public static void launchGame(){
+			TicTacToeGUI.launch();
 		}
 
 
@@ -341,12 +351,12 @@ public class TicTacToeGUI extends Application{
 
 
 					if (mark == 'X') {
-						icon = new ImageView(Cross);
-						opponentIcon = new ImageView(Circle);
+						gui.setIcon(new ImageView(Circle));
+						gui.setOpponentIcon(new ImageView(Cross));
 
 					} else {
-						icon = new ImageView(Circle);
-						opponentIcon = new ImageView(Cross);
+						gui.setIcon(new ImageView(Cross));
+						gui.setOpponentIcon(new ImageView(Circle));
 					}
 
 
@@ -357,75 +367,78 @@ public class TicTacToeGUI extends Application{
 					if (response.startsWith("VALID_MOVE")) {
 						int location = Integer.parseInt(response.substring(5));
 						if(location == 0){
-							handleButtonClick(topLeft,icon);
-							System.out.println("clicked");
+							handleButtonClick(gui.getButton0(),gui.getIcon());
 						}else if(location == 1)
 						{
-							handleButtonClick(topCenter,icon);
+							handleButtonClick(gui.getButton1(),gui.getIcon());
 						}
 						else if(location == 2)
 						{
-							handleButtonClick(topRight,icon);
+							handleButtonClick(gui.getButton2(),gui.getIcon());
 						}
 						else if(location == 3)
 						{
-							handleButtonClick(midLeft,icon);
+							handleButtonClick(gui.getButton3(),gui.getIcon());
 						}
 						else if(location == 4)
 						{
-							handleButtonClick(midCenter,icon);
+							handleButtonClick(gui.getButton4(),gui.getIcon());
 						}
 						else if(location == 5)
 						{
-							handleButtonClick(midRight,icon);
+							handleButtonClick(gui.getButton5(),gui.getIcon());
 						}
 						else if(location == 6)
 						{
-							handleButtonClick(botLeft,icon);
+							handleButtonClick(gui.getButton5(),gui.getIcon());
 						}
 						else if(location == 7)
 						{
-							handleButtonClick(botMid,icon);
+							handleButtonClick(gui.getButton6(),gui.getIcon());
 						}
-						else{
-							handleButtonClick(botRight,icon);
+						else if(location == 7)
+						{
+							handleButtonClick(gui.getButton7(),gui.getIcon());
+						}
+						else if(location == 8){
+							handleButtonClick(gui.getButton8(),gui.getIcon());
 						}
 
 
 					} else if (response.startsWith("OPPONENT_MOVED")) {
 						int location = Integer.parseInt(response.substring(15));
 						if(location == 0){
-							handleButtonClick(topLeft,opponentIcon);
+							handleButtonClick(gui.getButton0(),gui.getOpponentIcon());
 						}else if(location == 1)
 						{
-							handleButtonClick(topCenter,opponentIcon);
+							handleButtonClick(gui.getButton1(),gui.getOpponentIcon());
 						}
 						else if(location == 2)
 						{
-							handleButtonClick(topRight,opponentIcon);
+							handleButtonClick(gui.getButton2(),gui.getOpponentIcon());
 						}
 						else if(location == 3)
 						{
-							handleButtonClick(midLeft,opponentIcon);
+							handleButtonClick(gui.getButton3(),gui.getOpponentIcon());
 						}
 						else if(location == 4)
 						{
-							handleButtonClick(midCenter,opponentIcon);
+							handleButtonClick(gui.getButton4(),gui.getOpponentIcon());
 						}
 						else if(location == 5)
 						{
-							handleButtonClick(midRight,opponentIcon);
+							handleButtonClick(gui.getButton5(),gui.getOpponentIcon());
 						}
 						else if(location == 6)
 						{
-							handleButtonClick(botLeft,opponentIcon);
+							handleButtonClick(gui.getButton6(),gui.getOpponentIcon());
 						}
 						else if(location == 7)
 						{
-							handleButtonClick(botMid,opponentIcon);
+							handleButtonClick(gui.getButton7(),gui.getOpponentIcon());
 						}
-						else{
-							handleButtonClick(botRight,opponentIcon);
+						else if(location == 8){
+							handleButtonClick(gui.getButton8(),gui.getOpponentIcon());
 						}
 					}
 
@@ -449,5 +462,181 @@ public class TicTacToeGUI extends Application{
 				socket.close();
 			}
 		}
+		public static void buttonSetActionListener(){
+			gui.getButton0().addEventHandler(MouseEvent.MOUSE_PRESSED,
+					new EventHandler<MouseEvent>() {
+
+						public void handle(MouseEvent me) {
+							gui.setGraphic(mark);
+							out.print("MOVE0");
+						}
+					});
+			gui.getButton1().addEventHandler(MouseEvent.MOUSE_PRESSED,
+					new EventHandler<MouseEvent>() {
+						public void handle(MouseEvent me) {
+							gui.setGraphic(mark);
+							out.print("MOVE1");
+						}
+					});
+			gui.getButton2().addEventHandler(MouseEvent.MOUSE_PRESSED,
+					new EventHandler<MouseEvent>() {
+						public void handle(MouseEvent me) {
+							gui.setGraphic(mark);
+							out.print("MOVE2");
+						}
+					});
+			gui.getButton3().addEventHandler(MouseEvent.MOUSE_PRESSED,
+					new EventHandler<MouseEvent>() {
+						public void handle(MouseEvent me) {
+							gui.setGraphic(mark);
+							out.print("MOVE3");
+						}
+					});
+			gui.getButton4().addEventHandler(MouseEvent.MOUSE_PRESSED,
+					new EventHandler<MouseEvent>() {
+						public void handle(MouseEvent me) {
+							gui.setGraphic(mark);
+							out.print("MOVE4");
+						}
+					});
+			gui.getButton5().addEventHandler(MouseEvent.MOUSE_PRESSED,
+					new EventHandler<MouseEvent>() {
+						public void handle(MouseEvent me) {
+							gui.setGraphic(mark);
+							out.print("MOVE5");
+						}
+					});
+			gui.getButton6().addEventHandler(MouseEvent.MOUSE_PRESSED,
+					new EventHandler<MouseEvent>() {
+						public void handle(MouseEvent me) {
+							gui.setGraphic(mark);
+							out.print("MOVE6");
+						}
+					});
+			gui.getButton7().addEventHandler(MouseEvent.MOUSE_PRESSED,
+					new EventHandler<MouseEvent>() {
+						public void handle(MouseEvent me) {
+							gui.setGraphic(mark);
+							out.print("MOVE7");
+						}
+					});
+			gui.getButton8().addEventHandler(MouseEvent.MOUSE_PRESSED,
+					new EventHandler<MouseEvent>() {
+						public void handle(MouseEvent me) {
+							gui.setGraphic(mark);
+							out.print("MOVE8");
+						}
+					});
+
+		}
+
+		public static void buttonClicked(){
+			gui.getButton0().addEventHandler(MouseEvent.MOUSE_PRESSED,
+					new EventHandler<MouseEvent>() {
+
+						public void handle(MouseEvent me) {
+							gui.setGraphic(mark);
+							out.print("MOVE0");
+						}
+					});
+			gui.getButton1().addEventHandler(MouseEvent.MOUSE_PRESSED,
+					new EventHandler<MouseEvent>() {
+						public void handle(MouseEvent me) {
+							gui.setGraphic(mark);
+							out.print("MOVE1");
+						}
+					});
+			gui.getButton2().addEventHandler(MouseEvent.MOUSE_PRESSED,
+					new EventHandler<MouseEvent>() {
+						public void handle(MouseEvent me) {
+							gui.setGraphic(mark);
+							out.print("MOVE2");
+						}
+					});
+			gui.getButton3().addEventHandler(MouseEvent.MOUSE_PRESSED,
+					new EventHandler<MouseEvent>() {
+						public void handle(MouseEvent me) {
+							gui.setGraphic(mark);
+							out.print("MOVE3");
+						}
+					});
+			gui.getButton4().addEventHandler(MouseEvent.MOUSE_PRESSED,
+					new EventHandler<MouseEvent>() {
+						public void handle(MouseEvent me) {
+							gui.setGraphic(mark);
+							out.print("MOVE4");
+						}
+					});
+			gui.getButton5().addEventHandler(MouseEvent.MOUSE_PRESSED,
+					new EventHandler<MouseEvent>() {
+						public void handle(MouseEvent me) {
+							gui.setGraphic(mark);
+							out.print("MOVE5");
+						}
+					});
+			gui.getButton6().addEventHandler(MouseEvent.MOUSE_PRESSED,
+					new EventHandler<MouseEvent>() {
+						public void handle(MouseEvent me) {
+							gui.setGraphic(mark);
+							out.print("MOVE6");
+						}
+					});
+			gui.getButton7().addEventHandler(MouseEvent.MOUSE_PRESSED,
+					new EventHandler<MouseEvent>() {
+						public void handle(MouseEvent me) {
+							gui.setGraphic(mark);
+							out.print("MOVE7");
+						}
+					});
+			gui.getButton8().addEventHandler(MouseEvent.MOUSE_PRESSED,
+					new EventHandler<MouseEvent>() {
+						public void handle(MouseEvent me) {
+							gui.setGraphic(mark);
+							out.print("MOVE8");
+						}
+					});
+		}
+
+		public static void handleButtonClick(Button button, ImageView mark){
+			button.setGraphic(mark);
+
+			if(button.toString().equals(zero)){
+				System.out.println("clicked");
+				out.println("MOVE0");
+			}
+			else if(button.toString().equals(one)){
+				out.println("MOVE1");
+			}
+			else if(button.toString().equals(two)){
+				out.println("MOVE2");
+			}
+			else if(button.toString().equals(three)){
+				out.println("MOVE3");
+			}
+			else if(button.toString().equals(four)){
+				out.println("MOVE4");
+			}
+			else if(button.toString().equals(five)){
+				out.println("MOVE5");
+			}
+			else if(button.toString().equals(six)){
+				out.println("MOVE6");
+			}
+			else if(button.toString().equals(seven)){
+				out.println("MOVE7");
+			}
+			else if(button.toString().equals(eight)){
+				out.println("MOVE8");
+			}
+		}
+
+
+		public static void main(String[] args){
+			LaunchTicTacToe client = new LaunchTicTacToe("locathost");
+			client.launchGame();
+		}
+
+
+
 	}
 

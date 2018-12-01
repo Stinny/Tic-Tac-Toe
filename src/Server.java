@@ -12,20 +12,22 @@ import java.util.LinkedList;
  *
  */
 public class Server {
-
+    private static ServerSocket serverSocket;
 
     public static void main(String[] args) throws Exception {
-        ServerSocket serverSocket = new ServerSocket(12345);
+        try {
+            serverSocket = new ServerSocket(6666);
 
-            while(true){
+            while (true) {
                 Game game = new Game();
                 System.out.println("gamee");
+
                 Socket sX = serverSocket.accept();
-                System.out.println("Player connected");
-                Game.PlayerHandler playerX = game.new PlayerHandler(sX,'X');
+                System.out.println("Player 1 connected");
+                Game.PlayerHandler playerX = game.new PlayerHandler(sX, 'X');
                 Socket sO = serverSocket.accept();
                 System.out.println("Player connected");
-                Game.PlayerHandler playerO = game.new PlayerHandler(sO,'O');
+                Game.PlayerHandler playerO = game.new PlayerHandler(sO, 'O');
                 game.currentPlayer = playerX;
 
                 playerX.start();
@@ -33,11 +35,14 @@ public class Server {
                 System.out.println("Game started");
 
             }
+        }finally{
+            serverSocket.close();
+        }
 
     }
     }
 
-    class Game {
+    class Game{
 
         private PlayerHandler[] board = {
                 null, null, null,
@@ -56,46 +61,15 @@ public class Server {
         }
 
         public boolean hasWinner() {
-        	if (checkHorizontalWin() || checkVerticalWin() || checkDiagonalWin()) {
-        		return true;
-        	} else {
-        		return false;
-        	}
-        	
-        }
-        
-        public boolean checkHorizontalWin() {
-        	if (board[0] != null && board[0] == board[1] && board[0] == board[2]) {
-        		return true;
-        	} else if(board[3] != null && board[3] == board[4] && board[3] == board[5]) {
-        		return true;
-        	} else if(board[6] != null && board[6] == board[7] && board[6] == board[8]) {
-        		return true;
-        	} else {
-        		return false;
-        	}
-        }
-        
-        public boolean checkVerticalWin() {
-        	if (board[0] != null && board[0] == board[3] && board[0] == board[6]) {
-        		return true;
-        	} else if(board[1] != null && board[1] == board[4] && board[1] == board[7]) {
-        		return true;
-        	} else if(board[2] != null && board[2] == board[5] && board[2] == board[8]) {
-        		return true;
-        	} else {
-        		return false;
-        	}
-        }
-        
-        public boolean checkDiagonalWin() {
-        	if (board[0] != null && board[0] == board[4] && board[0] == board[8]) {
-        		return true;
-        	} else if (board[2] != null && board[2] == board[4] && board[2] == board[6]) {
-        		return true;
-        	} else {
-        		return false;
-        	}
+            return
+                    (board[0] != null && board[0] == board[1] && board[0] == board[2])
+                            ||(board[3] != null && board[3] == board[4] && board[3] == board[5])
+                            ||(board[6] != null && board[6] == board[7] && board[6] == board[8])
+                            ||(board[0] != null && board[0] == board[3] && board[0] == board[6])
+                            ||(board[1] != null && board[1] == board[4] && board[1] == board[7])
+                            ||(board[2] != null && board[2] == board[5] && board[2] == board[8])
+                            ||(board[0] != null && board[0] == board[4] && board[0] == board[8])
+                            ||(board[2] != null && board[2] == board[4] && board[2] == board[6]);
         }
 
         public synchronized boolean move(PlayerHandler player, int location) { //A player moves based on their assigned Piece (status)
@@ -150,15 +124,17 @@ public class Server {
                     while (true) {
                         String command = in.readLine();
                         System.out.println(command);
-                        if (command.startsWith("MOVE")) {
-                            int location = Integer.parseInt(command.substring(5));
-                            if (move(this,location)) {
-                                out.println("VALID_MOVE" + "location");
-                                out.println(hasWinner() ? "VICTORY"
-                                        : isFull() ? "TIE"
-                                        : "");
-                            } else {
-                                out.println("MESSAGE ?");
+                        if (command != null) {
+                            if (command.startsWith("MOVE")) {
+                                int location = Integer.parseInt(command.substring(5));
+                                if (move(this, location)) {
+                                    out.println("VALID_MOVE" + "location");
+                                    out.println(hasWinner() ? "VICTORY"
+                                            : isFull() ? "TIE"
+                                            : "");
+                                } else {
+                                    out.println("MESSAGE ?");
+                                }
                             }
                         }
                     }
