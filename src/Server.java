@@ -1,4 +1,4 @@
-
+import javafx.application.Application;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -15,37 +15,29 @@ public class Server {
 
 
     public static void main(String[] args) throws Exception {
-        ServerSocket serverSocket = new ServerSocket(3000);
-        try{
+        ServerSocket serverSocket = new ServerSocket(12345);
+
             while(true){
-
-
                 Game game = new Game();
+                System.out.println("gamee");
                 Socket sX = serverSocket.accept();
+                System.out.println("Player connected");
                 Game.PlayerHandler playerX = game.new PlayerHandler(sX,'X');
                 Socket sO = serverSocket.accept();
+                System.out.println("Player connected");
                 Game.PlayerHandler playerO = game.new PlayerHandler(sO,'O');
                 game.currentPlayer = playerX;
 
                 playerX.start();
                 playerO.start();
+                System.out.println("Game started");
 
             }
-        }finally{
-            serverSocket.close();
-        }
+
     }
     }
 
     class Game {
-        private static ServerSocket serverSocket;
-        public static PlayerHandler player;
-        public static LinkedList<PlayerHandler> matching;
-        public static HashMap<String, Game> games;
-
-        String name;
-        Thread t;
-        boolean playing = true;
 
         private PlayerHandler[] board = {
                 null, null, null,
@@ -126,10 +118,11 @@ public class Server {
 
                     while (true) {
                         String command = in.readLine();
+                        System.out.println(command);
                         if (command.startsWith("MOVE")) {
                             int location = Integer.parseInt(command.substring(5));
                             if (move(this,location)) {
-                                out.println("VALID_MOVE");
+                                out.println("VALID_MOVE" + "location");
                                 out.println(hasWinner() ? "VICTORY"
                                         : isFull() ? "TIE"
                                         : "");
