@@ -1,10 +1,7 @@
-import javafx.application.Application;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
 
 /**
  * Created by lucasraza on 3/8/17
@@ -13,30 +10,39 @@ import java.util.LinkedList;
  */
 public class Server {
     private static ServerSocket serverSocket;
+    private static ArrayList<Socket> sockets;
+    private static Socket socket;
 
     public static void main(String[] args) throws Exception {
         try {
-            serverSocket = new ServerSocket(6666);
+            serverSocket = new ServerSocket(7777);
 
-            while (true) {
+            sockets = new ArrayList<>();
+
+            for(int i = 1; i < 3; i++){
+                socket = serverSocket.accept();
+                System.out.println("Player " + i + " connected");
+                sockets.add(socket);
+
+            }
                 Game game = new Game();
-                System.out.println("gamee");
+                System.out.println("Created game, waiting for players to connect");
 
-                Socket sX = serverSocket.accept();
-                System.out.println("Player 1 connected");
-                Game.PlayerHandler playerX = game.new PlayerHandler(sX, 'X');
+
+                Game.PlayerHandler playerX = game.new PlayerHandler(sockets.remove(sockets.size()-1), 'X');
                 Socket sO = serverSocket.accept();
-                System.out.println("Player connected");
-                Game.PlayerHandler playerO = game.new PlayerHandler(sO, 'O');
+                System.out.println("Player 2 connected");
+                Game.PlayerHandler playerO = game.new PlayerHandler(sockets.remove(sockets.size()-1), 'O');
                 game.currentPlayer = playerX;
 
                 playerX.start();
                 playerO.start();
                 System.out.println("Game started");
 
-            }
-        }finally{
-            serverSocket.close();
+
+        }catch(IOException e)
+        {
+            e.printStackTrace();
         }
 
     }
