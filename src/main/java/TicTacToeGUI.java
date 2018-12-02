@@ -7,7 +7,7 @@ import javafx.stage.Stage;
 
 
 
-public class TicTacToeGUI extends Application{
+public class TicTacToeGUI extends Application {
 
 //	private Scene sc1;
 //	private static Socket socket;

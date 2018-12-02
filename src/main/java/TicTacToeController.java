@@ -13,6 +13,7 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.URL;
 import java.util.ResourceBundle;
+import javafx.concurrent.Task;
 
 /**
  * Created by lucasraza on 12/1/18.
@@ -26,7 +27,9 @@ public class TicTacToeController implements Initializable {
     private static Image Cross = new Image("./Cross.png");
     private static ImageView icon, opponentIcon;
 
-        @FXML
+
+
+    @FXML
         Button topLeft, topRight, topCenter,
                 midLeft, midCenter, midRight,
                 botLeft, botMid, botRight;
@@ -34,7 +37,6 @@ public class TicTacToeController implements Initializable {
         Button play;
 
         public void initialize(URL url, ResourceBundle rb) {
-
         }
 
         public void buttonClickHandler(ActionEvent evt) throws Exception{
@@ -85,7 +87,6 @@ public class TicTacToeController implements Initializable {
                 System.out.println("Send to server" + in);
 
                         char mark = response.charAt(7);
-                        System.out.println(mark);
                         System.out.println("You are " + mark);
 
                         if (mark == 'X') {
@@ -101,92 +102,62 @@ public class TicTacToeController implements Initializable {
 
                 while (true) {
                     response = in.readLine();
-                    System.out.println(response);
-                    if (response.startsWith("VALID_MOVE")) {
-                        int location = Integer.parseInt(response.substring(5));
-                        if(location == 0){
-                            handleButtonClick(topLeft,icon);
-                        }else if(location == 1)
-                        {
-                            handleButtonClick(topLeft,icon);
+                    if (response != null) {
+                        System.out.println(response);
+                        if (response.startsWith("VALID_MOVE")) {
+                            int location = Integer.parseInt(response.substring(5));
+                            if (location == 0) {
+                                handleButtonClick(topLeft, icon);
+                            } else if (location == 1) {
+                                handleButtonClick(topLeft, icon);
+                            } else if (location == 2) {
+                                handleButtonClick(topLeft, icon);
+                            } else if (location == 3) {
+                                handleButtonClick(topLeft, icon);
+                            } else if (location == 4) {
+                                handleButtonClick(topLeft, icon);
+                            } else if (location == 5) {
+                                handleButtonClick(topLeft, icon);
+                            } else if (location == 6) {
+                                handleButtonClick(topLeft, icon);
+                            } else if (location == 7) {
+                                handleButtonClick(topLeft, icon);
+                            } else if (location == 7) {
+                                handleButtonClick(topLeft, icon);
+                            } else if (location == 8) {
+                                handleButtonClick(topLeft, icon);
+                            }
+                        } else if (response.startsWith("OPPONENT_MOVED")) {
+                            int location = Integer.parseInt(response.substring(15));
+                            if (location == 0) {
+                                handleButtonClick(topLeft, opponentIcon);
+                            } else if (location == 1) {
+                                handleButtonClick(topCenter, opponentIcon);
+                            } else if (location == 2) {
+                                handleButtonClick(topRight, opponentIcon);
+                            } else if (location == 3) {
+                                handleButtonClick(midLeft, opponentIcon);
+                            } else if (location == 4) {
+                                handleButtonClick(midCenter, opponentIcon);
+                            } else if (location == 5) {
+                                handleButtonClick(midRight, opponentIcon);
+                            } else if (location == 6) {
+                                handleButtonClick(botLeft, opponentIcon);
+                            } else if (location == 7) {
+                                handleButtonClick(botMid, opponentIcon);
+                            } else if (location == 8) {
+                                handleButtonClick(botRight, opponentIcon);
+                            }
+                        } else if (response.startsWith("VICTORY")) {
+                            //messageLabel.setText("You win");
+                            break;
+                        } else if (response.startsWith("DEFEAT")) {
+                            //messageLabel.setText("You lose");
+                            break;
+                        } else if (response.startsWith("TIE")) {
+                            //messageLabel.setText("You tied");
+                            break;
                         }
-                        else if(location == 2)
-                        {
-                            handleButtonClick(topLeft,icon);
-                        }
-                        else if(location == 3)
-                        {
-                            handleButtonClick(topLeft,icon);
-                        }
-                        else if(location == 4)
-                        {
-                            handleButtonClick(topLeft,icon);
-                        }
-                        else if(location == 5)
-                        {
-                            handleButtonClick(topLeft,icon);
-                        }
-                        else if(location == 6)
-                        {
-                            handleButtonClick(topLeft,icon);
-                        }
-                        else if(location == 7)
-                        {
-                            handleButtonClick(topLeft,icon);
-                        }
-                        else if(location == 7)
-                        {
-                            handleButtonClick(topLeft,icon);
-                        }
-                        else if(location == 8){
-                            handleButtonClick(topLeft,icon);
-                        }
-                    } else if (response.startsWith("OPPONENT_MOVED")) {
-                        int location = Integer.parseInt(response.substring(15));
-                        if(location == 0){
-                            handleButtonClick(topLeft,opponentIcon);
-                        }else if(location == 1)
-                        {
-                            handleButtonClick(topCenter,opponentIcon);
-                        }
-                        else if(location == 2)
-                        {
-                            handleButtonClick(topRight,opponentIcon);
-                        }
-                        else if(location == 3)
-                        {
-                            handleButtonClick(midLeft,opponentIcon);
-                        }
-                        else if(location == 4)
-                        {
-                            handleButtonClick(midCenter,opponentIcon);
-                        }
-                        else if(location == 5)
-                        {
-                            handleButtonClick(midRight,opponentIcon);
-                        }
-                        else if(location == 6)
-                        {
-                            handleButtonClick(botLeft,opponentIcon);
-                        }
-                        else if(location == 7)
-                        {
-                            handleButtonClick(botMid,opponentIcon);
-                        }
-                        else if(location == 8){
-                            handleButtonClick(botRight,opponentIcon);
-                        }
-                    }
-
-                    else if (response.startsWith("VICTORY")) {
-                        //messageLabel.setText("You win");
-                        break;
-                    } else if (response.startsWith("DEFEAT")) {
-                        //messageLabel.setText("You lose");
-                        break;
-                    } else if (response.startsWith("TIE")) {
-                        //messageLabel.setText("You tied");
-                        break;
                     }
                 }
                 out.println("QUIT");
