@@ -2,6 +2,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
+import javafx.scene.control.Control;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
@@ -33,66 +34,67 @@ public class TicTacToeController implements Initializable {
         Button play;
 
         public void initialize(URL url, ResourceBundle rb) {
+
         }
 
-        public void buttonClickHandler(ActionEvent evt){
+        public Button buttonClickHandler(ActionEvent evt) throws Exception{
+                Button clickedButton = (Button) evt.getTarget();
 
-            Button clickedButton = (Button) evt.getTarget();
-            String button = clickedButton.getText();
+                String button =((Control)evt.getSource()).getId();
+                System.out.println(button);
 
-            while(!(button.equals(this.play))){
-                connectToServer();
-            }
-
-            if (button.equals(this.topLeft)) {
-                out.print("MOVE0");
-                //do something
-            } else if (button.equals(this.topRight)) {
-                //do something
-                out.print("MOVE2");
-            }
-            else if (button.equals(this.topCenter)) {
-                //do something
-                out.print("MOVE1");
-            }
-            else if (button.equals(this.midLeft)) {
-                //do something
-                out.print("MOVE3");
-            }
-            else if (button.equals(this.midCenter)) {
-                //do something
-                out.print("MOVE4");
-            }else if (button.equals(this.midRight)) {
-                //do something
-                out.print("MOVE5");
-            }
-            else if (button.equals(this.botLeft)) {
-                //do something
-                out.print("MOVE6");
-            }
-            else if (button.equals(this.botMid)) {
-                //do something
-                out.print("MOVE7");
-            }
-            else if (button.equals(this.botRight)) {
-                //do something
-                out.print("MOVE8");
-            }
+                if(button.equals("play")){
+                    play();
+                }
+                else if (button.equals("topLeft")) {
+                    out.print("MOVE0");
+                    //do something
+                } else if (button.equals("topRight")) {
+                    //do something
+                    out.print("MOVE2");
+                } else if (button.equals("topCenter")) {
+                    //do something
+                    out.print("MOVE1");
+                } else if (button.equals("midLeft")) {
+                    //do something
+                    out.print("MOVE3");
+                } else if (button.equals("midCenter")) {
+                    //do something
+                    out.print("MOVE4");
+                } else if (button.equals("midRight")) {
+                    //do something
+                    out.print("MOVE5");
+                } else if (button.equals("botLeft")) {
+                    //do something
+                    out.print("MOVE6");
+                } else if (button.equals("botMid")) {
+                    //do something
+                    out.print("MOVE7");
+                } else if (button.equals("botRight")) {
+                    //do something
+                    out.print("MOVE8");
+                }
+            return clickedButton;
 
 
 
         }
         public void play() throws IOException {
             String response;
+
             try {
+                connectToServer();
                 response = in.readLine();
+                System.out.println(in);
                 while(response == null) {
                     if (response.startsWith("WELCOME")) {
                         char mark = response.charAt(8);
+                        System.out.println("You are " + mark);
 
                         if (mark == 'X') {
                             icon = new ImageView(Circle);
                             opponentIcon = new ImageView(Cross);
+                            System.out.println(icon + " " + opponentIcon);
 
                         } else {
                             icon = new ImageView(Cross);

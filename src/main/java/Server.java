@@ -28,10 +28,7 @@ public class Server {
                 Game game = new Game();
                 System.out.println("Created game, waiting for players to connect");
 
-
                 Game.PlayerHandler playerX = game.new PlayerHandler(sockets.remove(sockets.size()-1), 'X');
-                Socket sO = serverSocket.accept();
-                System.out.println("Player 2 connected");
                 Game.PlayerHandler playerO = game.new PlayerHandler(sockets.remove(sockets.size()-1), 'O');
                 game.currentPlayer = playerX;
 
@@ -78,7 +75,8 @@ public class Server {
                             ||(board[2] != null && board[2] == board[4] && board[2] == board[6]);
         }
 
-        public synchronized boolean move(PlayerHandler player, int location) { //A player moves based on their assigned Piece (status)
+        public synchronized boolean move(PlayerHandler player, int location) { //A player moves based on their assigned Piece
+            System.out.println("Player moved at location " + location);
             if(board[location]==null){
                 board[location] = player;
                 currentPlayer = currentPlayer.opponent;
@@ -125,12 +123,13 @@ public class Server {
                 try {
                     if (mark == 'X') {
                         out.println("MESSAGE Your move");
+                        move(this, mark);
                     }
 
                     while (true) {
                         String command = in.readLine();
-                        System.out.println(command);
                         if (command != null) {
+
                             if (command.startsWith("MOVE")) {
                                 int location = Integer.parseInt(command.substring(5));
                                 if (move(this, location)) {
