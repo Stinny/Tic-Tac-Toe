@@ -36,7 +36,6 @@ public class Server {
                 playerO.start();
                 System.out.println("Game started");
 
-
         }catch(IOException e)
         {
             e.printStackTrace();
@@ -62,17 +61,47 @@ public class Server {
             }
             return true;
         }
-
         public boolean hasWinner() {
-            return
-                    (board[0] != null && board[0] == board[1] && board[0] == board[2])
-                            ||(board[3] != null && board[3] == board[4] && board[3] == board[5])
-                            ||(board[6] != null && board[6] == board[7] && board[6] == board[8])
-                            ||(board[0] != null && board[0] == board[3] && board[0] == board[6])
-                            ||(board[1] != null && board[1] == board[4] && board[1] == board[7])
-                            ||(board[2] != null && board[2] == board[5] && board[2] == board[8])
-                            ||(board[0] != null && board[0] == board[4] && board[0] == board[8])
-                            ||(board[2] != null && board[2] == board[4] && board[2] == board[6]);
+            if (checkHorizontalWin() || checkVerticalWin() || checkDiagonalWin()) {
+                return true;
+            } else {
+                return false;
+            }
+
+        }
+
+        public boolean checkHorizontalWin() {
+            if (board[0] != null && board[0] == board[1] && board[0] == board[2]) {
+                return true;
+            } else if(board[3] != null && board[3] == board[4] && board[3] == board[5]) {
+                return true;
+            } else if(board[6] != null && board[6] == board[7] && board[6] == board[8]) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        public boolean checkVerticalWin() {
+            if (board[0] != null && board[0] == board[3] && board[0] == board[6]) {
+                return true;
+            } else if(board[1] != null && board[1] == board[4] && board[1] == board[7]) {
+                return true;
+            } else if(board[2] != null && board[2] == board[5] && board[2] == board[8]) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        public boolean checkDiagonalWin() {
+            if (board[0] != null && board[0] == board[4] && board[0] == board[8]) {
+                return true;
+            } else if (board[2] != null && board[2] == board[4] && board[2] == board[6]) {
+                return true;
+            } else {
+                return false;
+            }
         }
 
         public synchronized boolean move(PlayerHandler player, int location) { //A player moves based on their assigned Piece
@@ -102,7 +131,7 @@ public class Server {
                     in = new BufferedReader(
                             new InputStreamReader(socket.getInputStream()));
                     out = new PrintWriter(socket.getOutputStream(), true);
-                    out.println("MESSAGE Finding another player");
+                    out.println("WELCOME" + mark);
                 } catch(IOException e){
 
                 }
@@ -123,7 +152,6 @@ public class Server {
                 try {
                     if (mark == 'X') {
                         out.println("MESSAGE Your move");
-                        move(this, mark);
                     }
 
                     while (true) {
@@ -132,6 +160,7 @@ public class Server {
 
                             if (command.startsWith("MOVE")) {
                                 int location = Integer.parseInt(command.substring(5));
+                                System.out.println(location);
                                 if (move(this, location)) {
                                     out.println("VALID_MOVE" + "location");
                                     out.println(hasWinner() ? "VICTORY"

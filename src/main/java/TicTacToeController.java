@@ -37,13 +37,15 @@ public class TicTacToeController implements Initializable {
 
         }
 
-        public Button buttonClickHandler(ActionEvent evt) throws Exception{
+        public void buttonClickHandler(ActionEvent evt) throws Exception{
                 Button clickedButton = (Button) evt.getTarget();
+                evt.getEventType();
 
                 String button =((Control)evt.getSource()).getId();
                 System.out.println(button);
 
                 if(button.equals("play")){
+                    clickedButton.setDisable(true);
                     play();
                 }
                 else if (button.equals("topLeft")) {
@@ -74,37 +76,32 @@ public class TicTacToeController implements Initializable {
                     //do something
                     out.print("MOVE8");
                 }
-            return clickedButton;
-
-
-
         }
         public void play() throws IOException {
             String response;
-
             try {
                 connectToServer();
                 response = in.readLine();
-                System.out.println(in);
-                while(response == null) {
-                    if (response.startsWith("WELCOME")) {
-                        char mark = response.charAt(8);
+                System.out.println("Send to server" + in);
+
+                        char mark = response.charAt(7);
+                        System.out.println(mark);
                         System.out.println("You are " + mark);
 
                         if (mark == 'X') {
                             icon = new ImageView(Circle);
                             opponentIcon = new ImageView(Cross);
-                            System.out.println(icon + " " + opponentIcon);
 
                         } else {
                             icon = new ImageView(Cross);
                             opponentIcon = new ImageView(Circle);
                         }
                         //frame.setTitle("Tic Tac Toe - Player " + mark);
-                    }
-                }
+
+
                 while (true) {
                     response = in.readLine();
+                    System.out.println(response);
                     if (response.startsWith("VALID_MOVE")) {
                         int location = Integer.parseInt(response.substring(5));
                         if(location == 0){
@@ -209,7 +206,7 @@ public class TicTacToeController implements Initializable {
                     socket.getInputStream()));
             out = new PrintWriter(socket.getOutputStream(), true);
         } catch (IOException e) {
-            System.out.println(e);
+            System.out.println(e + " fuck");
         }
     }
 }
