@@ -44,4 +44,4 @@ Features
 - Server client connectivity
 - Interact with board
 Demo video (1-2 mins)
-https://www.youtube.com/watch?v=dCIxRkGJlCI
+- https://www.youtube.com/watch?v=dCIxRkGJlCI
