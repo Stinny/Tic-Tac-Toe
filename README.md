@@ -31,9 +31,17 @@ Install
 - Download repository
 
 Run
-- Run TicTacToe class
+- navigate to the projects src folder in terminal
+- type command "javac Server.java"
+- Server class should compile
+- type command "java Server"
+- In 2 seperate terminal screens type command "javac TicTacToeGUI.java"
+- Type command "java TicTacToeGUI"
+- Do same steps for opening TicTacToeGUI again in terminal
+- Press play button on both client sides to connnect to server and start game
 
 Features
 - Server client connectivity
 - Interact with board
 Demo video (1-2 mins)
+https://www.youtube.com/watch?v=dCIxRkGJlCI
