@@ -1,4 +1,5 @@
 import com.sun.corba.se.impl.logging.IORSystemException;
+import com.sun.tools.internal.ws.wsdl.document.jaxws.Exception;
 
 import java.io.*;
 import java.net.ServerSocket;
@@ -15,38 +16,39 @@ public class Server {
     private static ArrayList<Socket> sockets;
     private static Socket socket;
 
-    public static void main(String[] args) throws Exception {
+
+    public static void main(String[] args) {
         try {
             serverSocket = new ServerSocket(7777);
 
             sockets = new ArrayList<>();
 
-            for(int i = 1; i < 3; i++){
+            for (int i = 1; i < 3; i++) {
                 socket = serverSocket.accept();
                 System.out.println("Player " + i + " connected");
                 sockets.add(socket);
 
             }
-                Game game = new Game();
-                System.out.println("Created game, waiting for players to connect");
+            Game game = new Game();
+            System.out.println("Created game, waiting for players to connect");
 
-                Game.PlayerHandler playerX = game.new PlayerHandler(sockets.remove(sockets.size()-1), 'X');
-                Game.PlayerHandler playerO = game.new PlayerHandler(sockets.remove(sockets.size()-1), 'O');
-                game.currentPlayer = playerX;
+            Game.PlayerHandler playerX = game.new PlayerHandler(sockets.remove(sockets.size() - 1), 'X');
+            Game.PlayerHandler playerO = game.new PlayerHandler(sockets.remove(sockets.size() - 1), 'O');
+            game.currentPlayer = playerX;
 
-                playerX.start();
-                playerO.start();
-                System.out.println("Game started");
+            playerX.start();
+            playerO.start();
+            System.out.println("Game started");
 
-        }catch(IOException e)
-        {
+
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
     }
-    }
 
-    class Game {
+
+    static class Game {
 
         private PlayerHandler[] board = {
                 null, null, null,
@@ -119,93 +121,83 @@ public class Server {
         }
 
         class PlayerHandler extends Thread {
-            char mark;
+            private char mark;
             private String name;
             private Socket socket;
 
-            PlayerHandler opponent;
+            private PlayerHandler opponent;
+
             private BufferedReader in;
             private PrintWriter out;
 
-            public PlayerHandler(Socket socket, char mark) {
+            private PlayerHandler(Socket socket, char mark) {
                 this.socket = socket;
                 this.mark = mark;
-                try {
-                    // initialize input and output streams
-                    in = new BufferedReader(
-                            new InputStreamReader(socket.getInputStream()));
-                    out = new PrintWriter(socket.getOutputStream(), true);
-                    out.println("WELCOME" + mark);
-                } catch (IOException e) {
-
-                } finally {
-                }
             }
 
-            public void setOpponent(PlayerHandler opponent) {
-                this.opponent = opponent;
+//            public void close(){
+//                out.close();
+//                in.close();
+//                socket.close();
+//
+//            }
 
-            }
-
-            public void opponentMoved(int location) {
+            private void opponentMoved(int location) {
                 out.println("OPPONENT_MOVED" + location);
                 out.println(
                         hasWinner() ? "DEFEAT" : isFull() ? "TIE" : "");
             }
 
-            public String response() throws Exception {
-                String response = null;
-
-                try {
-                    response = in.readLine();
-                    System.out.println(response);
-                    return response;
-                } catch (IOException e) {
-                    System.out.println(e);
-                } finally {
-                    in.close();
-                    socket.close();
-                }
-                return response;
-            }
-
-
-            public void run(){
+            public void run() {
                 System.out.println("running");
-                try {
-                    while (true) {
-                        String command;
-                        if((command=response())!=null){
-                                System.out.println(command);
 
-                                if (command.startsWith("MOVE")) {
-                                    int location = Integer.parseInt(command.substring(5));
-                                    System.out.println(location);
-                                    if (move(this, location)) {
-                                        out.println("VALID_MOVE" + "location");
-                                        out.println(hasWinner() ? "VICTORY"
-                                                : isFull() ? "TIE"
-                                                : "");
-                                    } else {
-                                        out.println("MESSAGE ?");
+
+                        try {
+                            in = new BufferedReader(
+                                    new InputStreamReader(socket.getInputStream()));
+                            out = new PrintWriter(socket.getOutputStream(), true);
+                            out.println("WELCOME" + mark);
+                            String response = in.readLine();
+                            while(true) {
+                                do {
+                                    while (response != null) {
+                                        if (response.startsWith("MOVE")) {
+                                            int location = Integer.parseInt(response.substring(4));
+                                            System.out.println(location);
+                                            if (move(this, location)) {
+                                                out.println("VALID_MOVE" + "location");
+                                                out.println(hasWinner() ? "VICTORY"
+                                                        : isFull() ? "TIE"
+                                                        : "");
+                                            } else {
+                                                out.println("MESSAGE ?");
+                                            }
+                                        }
                                     }
-                                }
-
+                                } while (response == null);
+                            }
+                        } catch (IOException e) {
+                            e.printStackTrace();
                         }
-                        System.out.println(command);
+
+//                        finally{
+//                            try{
+//                                in.close();
+//                            }catch(IOException e){
+//                                e.printStackTrace();
+//                            }
+//                        }
+
+
+
 
 
                     }
-                }catch(Exception e){
-                    e.printStackTrace();
 
-                }
-                finally{
-                    out.close();
-                }
             }
         }
     }
+
 
 
 

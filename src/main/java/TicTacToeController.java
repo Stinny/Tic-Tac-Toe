@@ -88,6 +88,7 @@ public class TicTacToeController implements Initializable {
 
     @FXML
     public void handleSquareNineClick(ActionEvent event) {
+
         out.println("MOVE8");
         System.out.println("bottom right");
     }
@@ -100,9 +101,6 @@ public class TicTacToeController implements Initializable {
             e.printStackTrace();
         }
     }
-        public boolean buttonClicked(){
-            return true;
-        }
         public void play() throws IOException {
             String welcome;
             try {
@@ -123,11 +121,8 @@ public class TicTacToeController implements Initializable {
                         }
                         //frame.setTitle("Tic Tac Toe - Player " + mark);
 
-            }
-            finally {
-                in.close();
-                out.close();
-                socket.close();
+            }catch(IOException e){
+                e.printStackTrace();
             }
         }
         public void handleButtonClick(Button button, ImageView mark){
